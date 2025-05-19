@@ -1,0 +1,16 @@
+<div class="file-status">
+  <div>
+    <span>Komponent:</span>
+    {% if comp.exists.component_py %}🐍 component.py{% else %}❌ component.py{% endif %}
+    {% if comp.exists.template_html %}🧩 template.html{% else %}❌ template.html{% endif %}
+    
+  </div>
+  <div>
+    <span>Dokumentation:</span>
+    {% if comp.exists.metadata_yaml %}📄 metadata.yaml{% else %}❌ metadata.yaml{% endif %}
+    {% if comp.exists.example_json %}💾 example.json{% else %}❌ example.json{% endif %}
+    {% if comp.exists.readme_md %}📘 README{% else %}❌ README{% endif %}
+    {% if comp.exists.example_html %}🌐 example.html{% else %}❌ example.html{% endif %}
+   
+  </div>
+</div>

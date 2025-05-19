@@ -1,0 +1,48 @@
+.
+├── componentlib
+│   ├── admin.py
+│   ├── apps.py
+│   ├── components
+│   │   ├── base.py
+│   │   └── product_card
+│   │       ├── component.py
+│   │       ├── example.html
+│   │       ├── example.json
+│   │       ├── metadata.yaml
+│   │       ├── README.md
+│   │       └── template.html
+│   ├── helpers
+│   │   └── preview.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── registry.py
+│   ├── static
+│   │   └── componentlib
+│   │       └── themes
+│   │           ├── bootstrap.css
+│   │           └── custom.css
+│   ├── templates
+│   │   └── patternlib_browser
+│   │       ├── detail.html
+│   │       └── index.html
+│   ├── templatetags
+│   │   ├── component_tags.py
+│   │   ├── custom_filters.py
+│   │   └── __init__.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── db.sqlite3
+├── demo_project
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── manage.py
+├── requirements.txt
+└── struktur.txt
+
+12 directories, 33 files

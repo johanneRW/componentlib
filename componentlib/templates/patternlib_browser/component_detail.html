@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ component.name }}</title>
+  <link rel="stylesheet" href="{% static '/componentlib/css/components.css' %}">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="{% url 'component_browser' %}">← Tilbage til oversigt</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <header>
+      <h1>
+        {{ component.name }}
+        {% include "patternlib_browser/fragments/tags.html" with tags=component.tags %}
+
+      </h1>
+
+    </header>
+
+    {% if component.exists %}
+      {% include "patternlib_browser/fragments/file_status.html" with comp=component %}
+    {% endif %}
+
+    <hr>
+
+    <section>
+      <h2>Beskrivelse</h2>
+      {% if component.description %}
+        <p>{{ component.description }}</p>
+      {% endif %}
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Eksempel</h2>
+      <div class="component-preview">
+        {{ component.rendered|safe }}
+      </div>
+    </section>
+
+    {% if previous or next %}
+      <nav class="component-nav">
+        {% if previous %}
+        <a href="{% url 'component_detail' key=previous.key %}">← {{ previous.name }}</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      {% if next %}
+        <a href="{% url 'component_detail' key=next.key %}">{{ next.name }} →</a>
+      {% endif %}
+      
+      </nav>
+    {% endif %}
+  </article>
+</main>
+
+</body>
+</html>

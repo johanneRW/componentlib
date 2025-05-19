@@ -1,0 +1,8 @@
+
+name: ProductCard
+description: Komponent der viser et produkt med navn og køb-knap.
+tags:
+  - produkt
+  - CTA
+category: visning
+status: stable

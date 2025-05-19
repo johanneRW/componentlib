@@ -1,0 +1,11 @@
+
+<div class="product-card {{ theme }}">
+  <h3 class="product-title">{{ product.name }}</h3>
+  <p class="product-description">{{ product.description }}</p>
+  <button class="{{ button_class }}"
+          hx-post="/cart/add/{{ product.id }}/"
+          hx-target="#cart-count"
+          hx-swap="innerHTML">
+    Køb
+  </button>
+</div>

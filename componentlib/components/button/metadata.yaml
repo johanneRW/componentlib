@@ -1,0 +1,14 @@
+
+name: button
+description: Skriv en beskrivelse her.
+tags: []
+inputs:
+  content:
+    type: string
+    required: false
+returns: html
+component_data:
+  author: johanne
+  created_at: 2025-05-19
+  component_uuid: 9b469010-3cf4-4c7f-9b78-d3e37250fe4c
+
