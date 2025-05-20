@@ -1,72 +1,68 @@
 import os
 from pathlib import Path
+import shutil
 from django.core.management.base import BaseCommand, CommandError
 from datetime import datetime
 import uuid
 
-# Peg på components-mappen
 COMPONENTS_DIR = Path(__file__).resolve().parent.parent.parent / "components"
 
-# Skabelon-filer og deres indhold
-TEMPLATE_FILES = {
-    "component.py": '''from django.template.loader import render_to_string
+def yes_or_no(prompt, default="y", style=None):
+    default = default.lower()
+    valid = {"y": True, "n": False, "": default == "y"}
 
-class {class_name}:
-    def __init__(self, **kwargs):
-        self.context = kwargs
+    while True:
+        val = input(f"{prompt} [{'Y/n' if default == 'y' else 'y/N'}]: ").strip().lower()
 
-    def render(self):
-        return render_to_string("components/{component_name}/template.html", self.context)
-''',
+        if val in ("q", "quit"):
+            msg = "Afbrudt af bruger."
+            print(msg)
+            raise SystemExit
 
-    "template.html": '''<div>
-  {{ content }}
-</div>
-''',
+        if val in valid:
+            return valid[val]
 
-"metadata.yaml": '''
-name: {component_name}
-description: Skriv en beskrivelse her.
-tags: []
-inputs:
-  content:
-    type: string
-    required: false
-returns: html
-component_data:
-  author: {author}
-  created_at: {created_at}
-  component_uuid: {uuid}
+        msg = "Ugyldigt svar. Skriv 'y' for ja, 'n' for nej eller 'q' for at afbryde."
+        print(style.ERROR(msg) if style else msg)
 
-''',
 
-    "README.md": "# {component_name}\n\nSkriv en beskrivelse af denne komponent.",
 
-   "example.json": '''{{
-  "content": "Eksempeltekst"
-}}''',
-
-    "example.html": '''<!-- Visuelt eksempel på hvordan komponenten bruges. -->''',
-}
 
 class Command(BaseCommand):
-    help = "Opretter en ny komponentmappe med standardfiler"
-
-    def add_arguments(self, parser):
-        parser.add_argument("name", type=str, help="Navn på komponenten (f.eks. 'button')")
-        parser.add_argument("--author", type=str, help="Forfatternavn (valgfrit)")
-        parser.add_argument("--no-readme", action="store_true", help="Udelad README.md")
-
+    help = "Interaktiv oprettelse af ny komponent"
+    
     def handle(self, *args, **options):
-        name = options["name"].strip().lower()
-        component_path = COMPONENTS_DIR / name
+    
+        # Navn – bliv ved til brugeren indtaster et gyldigt
+        while True:
+            name = input("Navn på komponent (fx button): ").strip().lower()
+            if not name:
+                self.stdout.write(self.style.ERROR("Navn er påkrævet."))
+                continue
 
-        if component_path.exists():
-            raise CommandError(f"Komponenten '{name}' findes allerede.")
+            component_path = COMPONENTS_DIR / name
+            if component_path.exists():
+                self.stdout.write(self.style.WARNING(f"Komponenten '{name}' findes allerede."))
+                try_again = yes_or_no("Vil du prøve et andet navn?", default="y", style=self.style)
+                if not try_again:
+                    print("Oprettelse afbrudt af bruger.")
+                    return
+                continue  # prøv igen med nyt navn
+            break  # navn er OK – gå videre til komponent-oprettelse
 
-        self.stdout.write(f"Opretter komponent: {name}")
 
-        author = options.get("author") or os.getenv("USER") or os.getenv("USERNAME") or "ukendt"
+        include_py = yes_or_no("Opret component.py?", default="y", style=self.style)
+        include_html = yes_or_no("Opret template.html?", default="y",  style=self.style)
+
+
+        if not include_py and not include_html:
+            raise CommandError("Du skal vælge mindst én filtype (Python eller HTML). Komponenten blev ikke oprettet.")
+        
+        include_readme = yes_or_no("Opret README.md og eksempelfiler?", default="y", style=self.style)
+
+        author = input(f"Forfatterens navn [default: {os.getenv('USER') or 'ukendt'}]: ").strip()
+        if not author:
+            author = os.getenv("USER") or "ukendt"
 
         context = {
             "uuid": str(uuid.uuid4()),
@@ -76,31 +72,63 @@ class Command(BaseCommand):
             "created_at": datetime.now().strftime("%Y-%m-%d"),
         }
 
-        # ➕ Filindhold forberedes
+        TEMPLATE_FILES = {}
+
+        if include_py:
+            TEMPLATE_FILES["component.py"] = '''from django.template.loader import render_to_string
+
+class {class_name}:
+def __init__(self, **kwargs):
+    self.context = kwargs
+
+def render(self):
+    return render_to_string("components/{component_name}/template.html", self.context)
+'''
+
+        if include_html:
+            TEMPLATE_FILES["template.html"] = '''<div>
+{{ content }}
+</div>
+'''
+
+        TEMPLATE_FILES["metadata.yaml"] = '''name: {component_name}
+description: Skriv en af beskrivelse komponenten her.
+tags: []
+inputs:
+content:
+type: 
+required: 
+returns: 
+component_data:
+author: {author}
+created_at: {created_at}
+component_uuid: {uuid}
+'''
+
+        if include_readme:
+            TEMPLATE_FILES["README.md"] = "# {component_name}\n\nSkriv en beskrivelse af denne komponent."
+            TEMPLATE_FILES["example.html"] = '''{{"content": "Eksempeltekst" }}'''
+
+        # Forbered filindhold
         try:
             file_contents = {}
             for filename, content in TEMPLATE_FILES.items():
-                if filename == "README.md" and options.get("no_readme"):
-                    continue  # Skipper README hvis valgt
                 file_contents[filename] = content.format(**context)
         except KeyError as e:
             raise CommandError(f"Fejl i skabelon: mangler nøgle {e}")
 
-        # ✅ Opret og skriv filer
+        # Skriv filerne
         try:
             os.makedirs(component_path)
             for filename, content in file_contents.items():
-                filepath = component_path / filename
-                with open(filepath, "w", encoding="utf-8") as f:
+                with open(component_path / filename, "w", encoding="utf-8") as f:
                     f.write(content)
                 self.stdout.write(f"  - Oprettet {filename}")
-
-            self.stdout.write(self.style.SUCCESS(f"Komponent '{name}' oprettet korrekt i 'components/{name}/'"))
-
+            self.stdout.write(self.style.SUCCESS(f"Komponent '{name}' oprettet i '{component_path}'"))
         except Exception as e:
             if component_path.exists():
-                import shutil
                 shutil.rmtree(component_path)
-            raise CommandError(f"Fejl under oprettelse af komponenten: {e}")
+            raise CommandError(f"Fejl under oprettelse: {e}")
+
 
 

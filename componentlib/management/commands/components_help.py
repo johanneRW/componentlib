@@ -8,7 +8,7 @@ class Command(BaseCommand):
 Django ComponentLib – Hjælp
 
 🔹 Opret en ny komponent:
-    python manage.py create_component <navn> [--author="Dit navn"] [--no-readme]
+    python manage.py create_component
 
 🔹 Struktur oprettes i:
     componentlib/components/<navn>/
