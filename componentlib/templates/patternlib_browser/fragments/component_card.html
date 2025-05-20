@@ -1,21 +1,9 @@
 <article class="component-card" id="comp-{{ comp.key }}">
-    <h2>{{ comp.name }}</h2>
-  
+  <div class="component-header">
+    <h2>{{ comp.name }} <small class="import-hint">→ <code>{{ comp.class_name }}</code></small></h2>
+  </div>
+  {% include "patternlib_browser/fragments/tags.html" with tags=comp.tags %}
+  {% include "patternlib_browser/fragments/file_status.html" with comp=comp %}
 
-  
-    {% include "patternlib_browser/fragments/file_status.html" with comp=comp %}
-  
-    {% if comp.description %}
-      <p>{{ comp.description }}</p>
-    {% endif %}
-  
-    {% include "patternlib_browser/fragments/tags.html" with tags=comp.tags %}
-   
-  
-    <div class="component-preview">
-      {{ comp.rendered|safe }}
-    </div>
-  
-    <a href="{% url 'component_detail' key=comp.key %}" class="view-detail-link">🔍 Vis komponent</a>
-  </article>
-  
+  <a href="{% url 'component_detail' key=comp.key %}" class="view-detail-link">🔍 Vis komponent</a>
+</article>

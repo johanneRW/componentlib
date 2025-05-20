@@ -1,5 +1,6 @@
 import yaml
 import importlib
+import inspect
 from pathlib import Path
 
 def load_all_components_metadata():
@@ -21,7 +22,7 @@ def load_all_components_metadata():
                     "example_json": (comp_dir / "example.json").exists(),
                     "example_html": (comp_dir / "example.html").exists(),
                 }
-
+#TODO: fjern evt scoren, hvis den ikke bliver brugt længere
                 # Beregn dokumentations-score
                 documentation_parts = [
                     "metadata_yaml",
@@ -46,8 +47,19 @@ def load_all_components_metadata():
                 try:
                     module_path = f"componentlib.components.{comp_dir.name}.component"
                     module = importlib.import_module(module_path)
-                    class_name = [name for name in dir(module) if name.endswith("Component")][0]
-                    data["class_name"] = class_name
+
+                    # Find klasser der ender på 'Component' og er defineret i dette modul (ikke importerede)
+                    component_classes = [
+                        obj for name, obj in inspect.getmembers(module, inspect.isclass)
+                        if name.endswith("Component") and obj.__module__ == module.__name__
+                    ]
+
+                    if component_classes:
+                        cls = component_classes[0]
+                        data["class_name"] = cls.__name__
+                    else:
+                        data["class_name"] = None  # eller evt. en fejlmarkering
+
                 except Exception as e:
                     data["import_error"] = str(e)
 

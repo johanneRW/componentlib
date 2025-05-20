@@ -19,4 +19,5 @@ def render_component_preview(component_key: str) -> str:
         return instance.render()
 
     except Exception as e:
-        return f"<em>Fejl i komponent '{component_key}': {e}</em>"
+        #return f"<em>Fejl i komponent '{component_key}': {e}</em>"
+        return None

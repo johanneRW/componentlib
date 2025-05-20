@@ -4,6 +4,7 @@ import shutil
 from django.core.management.base import BaseCommand, CommandError
 from datetime import datetime
 import uuid
+import re
 
 COMPONENTS_DIR = Path(__file__).resolve().parent.parent.parent / "components"
 
@@ -25,8 +26,21 @@ def yes_or_no(prompt, default="y", style=None):
         msg = "Ugyldigt svar. Skriv 'y' for ja, 'n' for nej eller 'q' for at afbryde."
         print(style.ERROR(msg) if style else msg)
 
+def to_pascal_case(snake_str):
+    return ''.join(word.capitalize() for word in snake_str.split('_'))
+
+def to_title_case(snake_str):
+    return ' '.join(word.capitalize() for word in snake_str.split('_'))
 
 
+def to_snake_case(name):
+    name = name.replace("-", "_")  # dash til underscore
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    snake = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    return snake
+
+def is_valid_component_name(name):
+    return re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name) is not None
 
 class Command(BaseCommand):
     help = "Interaktiv oprettelse af ny komponent"
@@ -35,20 +49,34 @@ class Command(BaseCommand):
     
         # Navn – bliv ved til brugeren indtaster et gyldigt
         while True:
-            name = input("Navn på komponent (fx button): ").strip().lower()
-            if not name:
+            raw_input_name = input("Navn på komponent (fx product_card): ").strip()
+            if not raw_input_name:
                 self.stdout.write(self.style.ERROR("Navn er påkrævet."))
                 continue
 
+            if not is_valid_component_name(raw_input_name):
+                self.stdout.write(self.style.ERROR("Navnet må kun indeholde bogstaver, tal og underscore – og må ikke starte med et tal."))
+                continue
+
+            name = to_snake_case(raw_input_name)
             component_path = COMPONENTS_DIR / name
+
             if component_path.exists():
                 self.stdout.write(self.style.WARNING(f"Komponenten '{name}' findes allerede."))
                 try_again = yes_or_no("Vil du prøve et andet navn?", default="y", style=self.style)
                 if not try_again:
-                    print("Oprettelse afbrudt af bruger.")
+                    self.stdout.write("Oprettelse afbrudt af bruger.")
                     return
-                continue  # prøv igen med nyt navn
-            break  # navn er OK – gå videre til komponent-oprettelse
+                continue
+
+            break
+
+        #vis hvordan navnet blev fortolket
+        self.stdout.write((f"Komponentnavn sat til: {name}"))
+
+        component_name = name  # snake_case som skrevet af brugeren
+        display_name = to_title_case(name)
+        class_name = f"{to_pascal_case(name)}Component"
 
 
         include_py = yes_or_no("Opret component.py?", default="y", style=self.style)
@@ -65,24 +93,24 @@ class Command(BaseCommand):
             author = os.getenv("USER") or "ukendt"
 
         context = {
-            "uuid": str(uuid.uuid4()),
-            "component_name": name,
-            "class_name": f"{name.capitalize()}Component",
-            "author": author,
-            "created_at": datetime.now().strftime("%Y-%m-%d"),
-        }
+    "uuid": str(uuid.uuid4()),
+    "component_name": component_name,
+    "display_name": display_name,
+    "class_name": class_name,
+    "author": author,
+    "created_at": datetime.now().strftime("%Y-%m-%d"),
+}
 
         TEMPLATE_FILES = {}
 
         if include_py:
-            TEMPLATE_FILES["component.py"] = '''from django.template.loader import render_to_string
+            TEMPLATE_FILES["component.py"] = '''from componentlib.base_component import BaseComponent
 
-class {class_name}:
-def __init__(self, **kwargs):
-    self.context = kwargs
-
-def render(self):
-    return render_to_string("components/{component_name}/template.html", self.context)
+class {class_name}(BaseComponent):
+    def get_context_data(self):
+        return {{
+            "content": self.context.get("content", "")
+        }}
 '''
 
         if include_html:
@@ -92,18 +120,26 @@ def render(self):
 '''
 
         TEMPLATE_FILES["metadata.yaml"] = '''name: {component_name}
-description: Skriv en af beskrivelse komponenten her.
+display_name: {display_name}
+class_name: {class_name}
+description: Skriv en beskrivelse af komponenten her.
 tags: []
 inputs:
-content:
-type: 
-required: 
-returns: 
+  content:
+    type: string
+    required: true
+    default: ""
+  is_active:
+    type: boolean
+    required: false
+    default: true
+returns: html
 component_data:
-author: {author}
-created_at: {created_at}
-component_uuid: {uuid}
+  author: {author}
+  createdAt: {created_at}
+  component_uuid: {uuid}
 '''
+
 
         if include_readme:
             TEMPLATE_FILES["README.md"] = "# {component_name}\n\nSkriv en beskrivelse af denne komponent."

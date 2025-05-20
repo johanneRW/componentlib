@@ -1,6 +1,8 @@
 from django.template.loader import render_to_string
 
-class ButtonComponent:
+from componentlib.components.base import BaseComponent
+
+class ButtonComponent(BaseComponent):
     def __init__(self, **kwargs):
         self.context = kwargs
 

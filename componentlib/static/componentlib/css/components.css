@@ -18,3 +18,19 @@
 .component-card h2 {
   margin-top: 0;
 }
+
+.component-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap; /* så det ikke bryder layout ved små skærme */
+}
+
+.component-header h2 {
+  margin: 0;
+}
+
+.component-header .tags {
+  display: flex;
+  gap: 0.25rem;
+}
