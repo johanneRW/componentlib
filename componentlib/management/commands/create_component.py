@@ -104,7 +104,7 @@ class Command(BaseCommand):
         TEMPLATE_FILES = {}
 
         if include_py:
-            TEMPLATE_FILES["component.py"] = '''from componentlib.base_component import BaseComponent
+            TEMPLATE_FILES["component.py"] = '''from componentlib.components.base import BaseComponent
 
 class {class_name}(BaseComponent):
     def get_context_data(self):

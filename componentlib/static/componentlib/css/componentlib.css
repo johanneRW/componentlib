@@ -34,3 +34,19 @@
   display: flex;
   gap: 0.25rem;
 }
+
+.file-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.missing {
+  opacity: 0.25;
+}
+
+.missing::after {
+  content: "";
+}
+

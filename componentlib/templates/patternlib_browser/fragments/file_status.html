@@ -1,16 +1,76 @@
-<div class="file-status">
+{% comment %} <div class="file-status">
   <div>
     <span>Komponent dele:</span>
-    {% if comp.exists.component_py %}🐍 component.py{% else %}❌ component.py{% endif %}
-    {% if comp.exists.template_html %}🧩 template.html{% else %}❌ template.html{% endif %}
-    
+    <span class="{% if not comp.exists.component_py %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/component.svg" alt="component icon"> 
+      {% if comp.exists.component_py %}component.py{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.template_html %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/template.svg" alt="template icon"> 
+      {% if comp.exists.template_html %}template.html{% endif %}
+    </span>
   </div>
+
   <div>
     <span>Dokumentation:</span>
-    {% if comp.exists.metadata_yaml %}📄 metadata.yaml{% else %}❌ metadata.yaml{% endif %}
-    {% if comp.exists.example_json %}💾 example.json{% else %}❌ example.json{% endif %}
-    {% if comp.exists.readme_md %}📘 README{% else %}❌ README{% endif %}
-    {% if comp.exists.example_html %}🌐 example.html{% else %}❌ example.html{% endif %}
-   
+    <span class="{% if not comp.exists.metadata_yaml %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/metadata.svg" alt="metadata icon"> 
+      {% if comp.exists.metadata_yaml %}metadata.yaml{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.example_json %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/example_json.svg" alt="example json icon"> 
+      {% if comp.exists.example_json %}example.json{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.readme_md %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/readme.svg" alt="readme icon"> 
+      {% if comp.exists.readme_md %}README{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.example_html %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/example_html.svg" alt="example html icon"> 
+      {% if comp.exists.example_html %}example.html{% endif %}
+    </span>
+  </div>
+</div>
+ {% endcomment %}
+
+ <div class="file-status">
+  <div>
+    <span>Komponent dele:</span>
+    <span class="{% if not comp.exists.component_py %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/component.svg" alt="component icon"> 
+      {% if comp.exists.component_py %}.py{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.template_html %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/template.svg" alt="template icon"> 
+      {% if comp.exists.template_html %}.html{% endif %}
+    </span>
+  </div>
+
+  <div>
+    <span>Dokumentation:</span>
+    <span class="{% if not comp.exists.metadata_yaml %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/metadata.svg" alt="metadata icon"> 
+      {% if comp.exists.metadata_yaml %}.yaml{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.example_json %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/example_json.svg" alt="example json icon"> 
+      {% if comp.exists.example_json %}.json{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.readme_md %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/readme.svg" alt="readme icon"> 
+      {% if comp.exists.readme_md %}.md{% endif %}
+    </span>
+
+    <span class="{% if not comp.exists.example_html %}missing{% endif %}">
+      <img class="file-icon" src="/static/icons/example_html.svg" alt="example html icon"> 
+      {% if comp.exists.example_html %}.html{% endif %}
+    </span>
   </div>
 </div>

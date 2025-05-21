@@ -1,9 +1,0 @@
-{
-  "product": {
-    "id": 1,
-    "name": "Eksempel Produkt",
-    "description": "Dette er en test"
-  },
-  "theme": "bootstrap",
-  "button_class": "btn btn-primary"
-}

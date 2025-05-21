@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>{{ component.name }}</title>
-  <link rel="stylesheet" href="{% static '/componentlib/css/components.css' %}">
+  <link rel="stylesheet" href="{% static '/componentlib/css/componentlib.css' %}">
 </head>
 <body>
 
@@ -49,7 +49,7 @@
         {% if component.rendered %}
         {{ component.rendered|safe }}
       {% else %}
-        <em>Ingen template registreret for denne komponent.</em>
+        <em>Ingen template tilgængelig for denne komponent.</em>
       {% endif %}
       </div>
     </section>

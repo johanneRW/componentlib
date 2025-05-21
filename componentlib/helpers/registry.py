@@ -3,6 +3,9 @@ import importlib
 import inspect
 from pathlib import Path
 
+# Internt lager af registrerede komponentklasser
+_component_classes = {}
+
 def load_all_components_metadata():
     base_path = Path(__file__).resolve().parent.parent / "components"
     components = []
@@ -10,10 +13,11 @@ def load_all_components_metadata():
     for comp_dir in base_path.iterdir():
         meta_file = comp_dir / "metadata.yaml"
         if meta_file.exists():
-            with open(meta_file, "r") as f:
+            with open(meta_file, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 data["key"] = comp_dir.name
-                # Tilføj komponent-eksistens-status
+
+                # Tjek hvilke filer der eksisterer
                 data["exists"] = {
                     "component_py": (comp_dir / "component.py").exists(),
                     "template_html": (comp_dir / "template.html").exists(),
@@ -22,8 +26,8 @@ def load_all_components_metadata():
                     "example_json": (comp_dir / "example.json").exists(),
                     "example_html": (comp_dir / "example.html").exists(),
                 }
-#TODO: fjern evt scoren, hvis den ikke bliver brugt længere
-                # Beregn dokumentations-score
+
+                # Dokumentations-score
                 documentation_parts = [
                     "metadata_yaml",
                     "readme_md",
@@ -33,8 +37,6 @@ def load_all_components_metadata():
                 exists = data["exists"]
                 documentation_score = sum(1 for part in documentation_parts if exists.get(part, False))
 
-                # Tjek om mindst en af de kritiske filer (.py eller .html) eksisterer
-                critical_files_exist = exists["component_py"] or exists["template_html"]
                 critical_files_count = sum(1 for part in ["component_py", "template_html"] if exists.get(part, False))
 
                 data["completeness"] = {
@@ -44,11 +46,12 @@ def load_all_components_metadata():
                     "critical_files_total": 2,
                 }
 
+                # Forsøg at importere komponentklassen
                 try:
                     module_path = f"componentlib.components.{comp_dir.name}.component"
                     module = importlib.import_module(module_path)
 
-                    # Find klasser der ender på 'Component' og er defineret i dette modul (ikke importerede)
+                    # Find klasser der ender på 'Component' og er defineret i dette modul
                     component_classes = [
                         obj for name, obj in inspect.getmembers(module, inspect.isclass)
                         if name.endswith("Component") and obj.__module__ == module.__name__
@@ -57,12 +60,19 @@ def load_all_components_metadata():
                     if component_classes:
                         cls = component_classes[0]
                         data["class_name"] = cls.__name__
+                        _component_classes[comp_dir.name] = cls  # ← Registrér klassen
                     else:
-                        data["class_name"] = None  # eller evt. en fejlmarkering
+                        data["class_name"] = None
+                        data["import_error"] = "No class ending in 'Component' found"
 
                 except Exception as e:
+                    data["class_name"] = None
                     data["import_error"] = str(e)
 
                 components.append(data)
 
     return components
+
+def get_component_class(name):
+    """Hent komponentklasse ud fra mappe-navn (key)"""
+    return _component_classes.get(name)
