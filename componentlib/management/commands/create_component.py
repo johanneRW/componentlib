@@ -107,6 +107,8 @@ class Command(BaseCommand):
             TEMPLATE_FILES["component.py"] = '''from componentlib.components.base import BaseComponent
 
 class {class_name}(BaseComponent):
+    template_filename = "template.html" 
+    
     def get_context_data(self):
         return {{
             "content": self.context.get("content", "")
@@ -114,7 +116,8 @@ class {class_name}(BaseComponent):
 '''
 
         if include_html:
-            TEMPLATE_FILES["template.html"] = '''<div>
+            TEMPLATE_FILES["template.html"] = '''{% load custom_filters %}
+            <div>
 {{ content }}
 </div>
 '''
@@ -139,7 +142,7 @@ component_data:
   createdAt: {created_at}
   component_uuid: {uuid}
 '''
-
+#TODO: tilføj json til templates, find ud af om der er brug for exsample.html
 
         if include_readme:
             TEMPLATE_FILES["README.md"] = "# {component_name}\n\nSkriv en beskrivelse af denne komponent."

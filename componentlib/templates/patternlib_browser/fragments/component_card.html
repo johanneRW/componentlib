@@ -1,6 +1,6 @@
 <article class="component-card" id="comp-{{ comp.key }}">
   <div class="component-header">
-    <h2>{{ comp.name }} <small class="import-hint">→ <code>{{ comp.class_name }}</code></small></h2>
+    <h2>{{ comp.display_name }} <small class="import-hint">→ <code>{{ comp.class_name }}</code></small></h2>
   </div>
   {% include "patternlib_browser/fragments/tags.html" with tags=comp.tags %}
   {% include "patternlib_browser/fragments/file_status.html" with comp=comp %}

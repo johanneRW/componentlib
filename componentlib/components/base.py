@@ -1,5 +1,6 @@
 import yaml
 import warnings
+import inspect
 from pathlib import Path
 from django.template import engines
 
@@ -7,14 +8,18 @@ from django.template import engines
 
 
 class BaseComponent:
+    
+    
     template_filename = "template.html"
     metadata_filename = "metadata.yaml"
 
-    def __init__(self, **kwargs):
+    def __init__(self, base_path=None, **kwargs):
         self.context = kwargs
-        self.base_path = Path(__file__).resolve().parent
+        self.base_path = Path(base_path) if base_path else Path(inspect.getfile(self.__class__)).resolve().parent
         self.metadata = self.load_metadata()
         self.validate_context()
+        
+
 
     def load_metadata(self) -> dict:
         meta_path = self.base_path / self.metadata_filename
@@ -56,11 +61,16 @@ class BaseComponent:
 
 
     def get_context_data(self) -> dict:
-        return self.context  # kan overskrives i subklasse
+        print("[DEBUG] DEFAULT get_context_data (BaseComponent)")
+        return self.context
+
 
     def render(self) -> str:
+        print("[RENDER] BaseComponent.render() CALLED")
+
         template_path = self.base_path / self.template_filename
         template_string = template_path.read_text(encoding="utf-8")
         django_engine = engines["django"]
         template = django_engine.from_string(template_string)
         return template.render(self.get_context_data())
+

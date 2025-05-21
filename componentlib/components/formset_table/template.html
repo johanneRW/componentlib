@@ -1,0 +1,20 @@
+{% load custom_filters %}
+
+<table class="c-table">
+  <thead>
+    <tr>
+      {% for col in columns %}
+        <th>{{ col|capfirst }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+      <tr>
+        {% for col in columns %}
+          <td>{{ row|get_item:col }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

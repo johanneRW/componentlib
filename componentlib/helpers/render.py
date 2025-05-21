@@ -14,6 +14,7 @@ def render_component(key: str, kwargs: dict = None) -> str:
         # Find den klasse der ender på "Component"
         class_name = next(name for name in dir(module) if name.endswith("Component"))
         cls = getattr(module, class_name)
+        print("[RENDER PREVIEW] Using class:", cls.__name__)
 
         # Brug kwargs hvis de gives, ellers læs example.json
         if not kwargs:

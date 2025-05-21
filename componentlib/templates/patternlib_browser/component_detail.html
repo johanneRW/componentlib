@@ -19,7 +19,7 @@
     <header>
       <div class="component-header">
       <h1>
-        {{ component.name }}  
+        {{ component.display_name }}  
         <small class="import-hint">→ <code>{{ component.class_name }}</code></small>
         
       </h1>
@@ -47,13 +47,30 @@
       <h2>Eksempel</h2>
       <div class="component-preview">
         {% if component.rendered %}
-        {{ component.rendered|safe }}
-      {% else %}
-        <em>Ingen template tilgængelig for denne komponent.</em>
-      {% endif %}
+          {{ component.rendered|safe }}
+        {% else %}
+          <em>Ingen template tilgængelig for denne komponent.</em>
+        {% endif %}
       </div>
+    
+      {% if component.rendered %}
+        <h3>Rendered HTML</h3>
+        <pre><code>{{ component.rendered|escape }}</code></pre>
+      {% endif %}
     </section>
     
+    
+    <hr>
+<section>
+  <h2>Kode</h2>
+  {% for filename, content in files.items %}
+    <h3>{{ filename }}</h3>
+    <pre><code>{{ content|escape }}</code></pre>
+  {% empty %}
+    <p>Ingen kodefiler tilgængelige.</p>
+  {% endfor %}
+</section>
+
 
     {% if previous or next %}
       <nav class="component-nav">

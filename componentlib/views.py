@@ -79,6 +79,7 @@ def component_browser(request):
 def component_detail(request, key):
     from .helpers.preview import render_component_preview
     from .helpers.registry import load_all_components_metadata
+    from pathlib import Path
 
     components = sorted(load_all_components_metadata(), key=lambda c: c["name"].lower())
     index = next((i for i, c in enumerate(components) if c["key"] == key), None)
@@ -89,6 +90,15 @@ def component_detail(request, key):
     component = components[index]
     component["rendered"] = render_component_preview(key)
 
+    # Læs relevante kodefiler
+    base_path = Path(__file__).resolve().parent / "components" / key
+    file_names = ["template.html", "component.py", "metadata.yaml", "example.json", "README.md"]
+    files = {}
+    for fname in file_names:
+        path = base_path / fname
+        if path.exists():
+            files[fname] = path.read_text(encoding="utf-8")
+
     previous = components[index - 1] if index > 0 else None
     next_comp = components[index + 1] if index < len(components) - 1 else None
 
@@ -96,5 +106,7 @@ def component_detail(request, key):
         "component": component,
         "previous": previous,
         "next": next_comp,
+        "files": files,
     })
+
 

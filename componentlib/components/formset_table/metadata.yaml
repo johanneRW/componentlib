@@ -1,0 +1,27 @@
+name: formset_table
+display_name: Formset Table
+class_name: FormsetTableComponent
+description: Tabel til visning af formset-data med definerede kolonner.
+tags: [formset, table, visning]
+inputs:
+  formset:
+    type: list
+    required: true
+  columns:
+    type: list
+    required: true
+  content:
+    type: string
+    required: true
+    default: ""
+  is_active:
+    type: boolean
+    required: false
+    default: true
+returns: html
+component_data:
+  author: johanne
+  createdAt: 2025-05-21
+  component_uuid: 03961d53-890e-4613-b75b-b44c181a548d
+  css_class_usage:
+    - c-table
