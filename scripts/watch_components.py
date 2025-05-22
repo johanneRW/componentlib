@@ -1,35 +1,46 @@
+import time
+from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from pathlib import Path
-import time
 import subprocess
+import sys
 
-COMPONENTS_DIR = Path("componentlib/components")
+COMPONENTS_DIR = Path(__file__).resolve().parent.parent / "componentlib" / "components"
 
-def is_relevant(file_path):
-    return file_path.name in ("metadata.yaml", "component.py")
 
-class MetadataChangeHandler(FileSystemEventHandler):
+class ComponentChangeHandler(FileSystemEventHandler):
     def on_modified(self, event):
-        if event.is_directory:
-            return
+        if not event.is_directory and "metadata.yaml" in event.src_path or "component.py" in event.src_path:
+            changed_path = Path(event.src_path)
+            component_dir = changed_path.parent
 
-        file_path = Path(event.src_path)
-        if is_relevant(file_path):
-            component_name = file_path.parent.name
-            print(f"[WATCH] 🔁 Change detected in: {file_path}")
-            subprocess.run(["python", "manage.py", "generate_component_model", component_name])
+            component_name = component_dir.name
+            print(f"[WATCH] 🔁 Change detected in: {component_dir}")
 
-if __name__ == "__main__":
+            try:
+                subprocess.run(
+                    [sys.executable, "manage.py", "generate_component_model", component_name],
+                    check=True
+                )
+            except subprocess.CalledProcessError as e:
+                print(f"[ERROR] Failed to generate model for {component_name}")
+                print(e)
+
+
+def main():
     print("[WATCH] Watching component metadata and logic...")
-    event_handler = MetadataChangeHandler()
+    event_handler = ComponentChangeHandler()
     observer = Observer()
-    observer.schedule(event_handler, path=str(COMPONENTS_DIR), recursive=True)
-    observer.start()
+    observer.schedule(event_handler, str(COMPONENTS_DIR), recursive=True)
 
+    observer.start()
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+
+
+if __name__ == "__main__":
+    main()

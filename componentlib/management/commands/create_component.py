@@ -1,16 +1,13 @@
 import os
-from pathlib import Path
-import shutil
-from django.core.management.base import BaseCommand, CommandError
-from datetime import datetime
-import uuid
 import re
-from componentlib.helpers.codegen import generate_model_class
+import uuid
+import shutil
+import json
+from pathlib import Path
+from datetime import datetime
+from django.core.management.base import BaseCommand, CommandError
 
 COMPONENTS_DIR = Path(__file__).resolve().parent.parent.parent / "components"
-
-
-
 
 def yes_or_no(prompt, default="y", style=None):
     default = default.lower()
@@ -18,167 +15,158 @@ def yes_or_no(prompt, default="y", style=None):
 
     while True:
         val = input(f"{prompt} [{'Y/n' if default == 'y' else 'y/N'}]: ").strip().lower()
-
         if val in ("q", "quit"):
-            msg = "Afbrudt af bruger."
-            print(msg)
-            raise SystemExit
-
+            raise SystemExit("Afbrudt af bruger.")
         if val in valid:
             return valid[val]
+        print(style.ERROR("Ugyldigt svar. Skriv 'y', 'n' eller 'q'") if style else "Ugyldigt svar.")
 
-        msg = "Ugyldigt svar. Skriv 'y' for ja, 'n' for nej eller 'q' for at afbryde."
-        print(style.ERROR(msg) if style else msg)
+def to_pascal_case(snake_str): return ''.join(word.capitalize() for word in snake_str.split('_'))
+def to_title_case(snake_str): return ' '.join(word.capitalize() for word in snake_str.split('_'))
+def to_snake_case(name): return re.sub(r'(?<!^)(?=[A-Z])', '_', name.replace("-", "_")).lower()
+def is_valid_component_name(name): return re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name)
 
-def to_pascal_case(snake_str):
-    return ''.join(word.capitalize() for word in snake_str.split('_'))
+def generate_templates(context, include_py, include_html, include_htmx, include_readme):
+    TEMPLATE_FILES = {}
 
-def to_title_case(snake_str):
-    return ' '.join(word.capitalize() for word in snake_str.split('_'))
+    # Python-komponent
+    if include_py:
+        TEMPLATE_FILES["component.py"] = f'''from componentlib.components.base import BaseComponent
+from .props import {context["class_name"]}Props
 
-
-def to_snake_case(name):
-    name = name.replace("-", "_")  # dash til underscore
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    snake = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-    return snake
-
-def is_valid_component_name(name):
-    return re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name) is not None
-
-class Command(BaseCommand):
-    help = "Interaktiv oprettelse af ny komponent"
-    
-    def handle(self, *args, **options):
-    
-        # Navn – bliv ved til brugeren indtaster et gyldigt
-        while True:
-            raw_input_name = input("Navn på komponent (fx product_card): ").strip()
-            if not raw_input_name:
-                self.stdout.write(self.style.ERROR("Navn er påkrævet."))
-                continue
-
-            if not is_valid_component_name(raw_input_name):
-                self.stdout.write(self.style.ERROR("Navnet må kun indeholde bogstaver, tal og underscore – og må ikke starte med et tal."))
-                continue
-
-            name = to_snake_case(raw_input_name)
-            component_path = COMPONENTS_DIR / name
-
-            if component_path.exists():
-                self.stdout.write(self.style.WARNING(f"Komponenten '{name}' findes allerede."))
-                try_again = yes_or_no("Vil du prøve et andet navn?", default="y", style=self.style)
-                if not try_again:
-                    self.stdout.write("Oprettelse afbrudt af bruger.")
-                    return
-                continue
-
-            break
-
-        #vis hvordan navnet blev fortolket
-        self.stdout.write((f"Komponentnavn sat til: {name}"))
-
-        component_name = name  # snake_case som skrevet af brugeren
-        display_name = to_title_case(name)
-        class_name = f"{to_pascal_case(name)}Component"
-
-
-        include_py = yes_or_no("Opret component.py?", default="y", style=self.style)
-        include_html = yes_or_no("Opret template.html?", default="y",  style=self.style)
-
-
-        if not include_py and not include_html:
-            raise CommandError("Du skal vælge mindst én filtype (Python eller HTML). Komponenten blev ikke oprettet.")
-        
-        include_readme = yes_or_no("Opret README.md og eksempelfiler?", default="y", style=self.style)
-
-        author = input(f"Forfatterens navn [default: {os.getenv('USER') or 'ukendt'}]: ").strip()
-        if not author:
-            author = os.getenv("USER") or "ukendt"
-
-        context = {
-    "uuid": str(uuid.uuid4()),
-    "component_name": component_name,
-    "display_name": display_name,
-    "class_name": class_name,
-    "author": author,
-    "created_at": datetime.now().strftime("%Y-%m-%d"),
-}
-
-        TEMPLATE_FILES = {}
-
-        if include_py:
-            TEMPLATE_FILES["component.py"] = '''from componentlib.components.base import BaseComponent
-from .types import {class_name}Props
-
-class {class_name}(BaseComponent):
+class {context["class_name"]}(BaseComponent):
     template_filename = "template.html"
 
     def __init__(self, **kwargs):
-        props = {class_name}Props(**kwargs)
+        props = {context["class_name"]}Props(**kwargs)
         super().__init__(**props.dict())
-
-    def get_context_data(self):
-        return self.context
+        self._validated = True
 '''
 
-
-
-        if include_html:
-            TEMPLATE_FILES["template.html"] = '''{% load custom_filters %}
-            <div>
-{{ content }}
+    # HTML-template
+    if include_html:
+        TEMPLATE_FILES["template.html"] = '''<div>
+  {{ content }}
 </div>
 '''
 
-        TEMPLATE_FILES["metadata.yaml"] = '''name: {component_name}
-display_name: {display_name}
-class_name: {class_name}
+    # HTMX view
+    if include_htmx:
+        TEMPLATE_FILES["view.py"] = '''from django.http import HttpResponse
+
+def htmx_view(func):
+    func._is_htmx_view = True
+    return func
+
+@htmx_view
+def component_result_view(request):
+    val = request.GET.get("value", "")
+    return HttpResponse(f"<p>Du valgte: <strong>{{val}}</strong></p>")
+'''
+
+    # Eksempeldata
+    example_data = {
+        "content": "Eksempelindhold"
+    }
+    if include_htmx:
+        example_data["target_url"] = f"/htmx/{context['component_name']}/component_result_view/"
+
+    TEMPLATE_FILES["example.json"] = json.dumps(example_data, indent=2)
+
+    # metadata.yaml
+    metadata_inputs = {
+        "  content:\n    type: string\n    required: true\n    default: \"Eksempelindhold\""
+    }
+    if include_htmx:
+        metadata_inputs.add(f"  target_url:\n    type: string\n    required: false\n    default: \"/htmx/{context['component_name']}/component_result_view/\"")
+
+    metadata_inputs_block = "\n".join(sorted(metadata_inputs))
+
+    TEMPLATE_FILES["metadata.yaml"] = f'''name: {context["component_name"]}
+display_name: {context["display_name"]}
+class_name: {context["class_name"]}
 description: Skriv en beskrivelse af komponenten her.
-tags: []
+tags: [{'htmx' if include_htmx else ''}]
 inputs:
-  content:
-    type: string
-    required: true
-    default: ""
-  is_active:
-    type: boolean
-    required: false
-    default: true
+{metadata_inputs_block}
 returns: html
 component_data:
-  author: {author}
-  createdAt: {created_at}
-  component_uuid: {uuid}
+  author: {context["author"]}
+  createdAt: {context["created_at"]}
+  component_uuid: {context["uuid"]}
 '''
-#TODO: tilføj json til templates, find ud af om der er brug for exsample.html
 
-        if include_readme:
-            TEMPLATE_FILES["README.md"] = "# {component_name}\n\nSkriv en beskrivelse af denne komponent."
-            TEMPLATE_FILES["example.html"] = '''{{"content": "Eksempeltekst" }}'''
+    # props.py
+    props_lines = [
+        "from pydantic import BaseModel, Field\n",
+        f"class {context['class_name']}Props(BaseModel):",
+        "    content: str = Field(\"Eksempelindhold\")"
+    ]
+    if include_htmx:
+        props_lines.append(f"    target_url: str = Field(\"/htmx/{context['component_name']}/component_result_view/\")")
 
-        # Forbered filindhold
+    TEMPLATE_FILES["props.py"] = "\n".join(props_lines) + "\n"
+
+    # README
+    if include_readme:
+        TEMPLATE_FILES["README.md"] = f"# {context['display_name']}\n\nBeskrivelse af komponenten."
+
+    return TEMPLATE_FILES
+
+
+class Command(BaseCommand):
+    help = "Interaktiv oprettelse af ny Django/HTMX-komponent"
+
+    def handle(self, *args, **options):
+        while True:
+            raw_name = input("Navn på komponent (fx product_card): ").strip()
+            if not raw_name:
+                self.stdout.write(self.style.ERROR("Navn krævet."))
+                continue
+            if not is_valid_component_name(raw_name):
+                self.stdout.write(self.style.ERROR("Ugyldigt navn."))
+                continue
+
+            name = to_snake_case(raw_name)
+            path = COMPONENTS_DIR / name
+
+            if path.exists():
+                self.stdout.write(self.style.WARNING(f"'{name}' findes allerede."))
+                if not yes_or_no("Vil du prøve et andet navn?", default="y", style=self.style):
+                    return
+                continue
+            break
+
+        display_name = to_title_case(name)
+        class_name = f"{to_pascal_case(name)}Component"
+        author = input(f"Forfatterens navn [{os.getenv('USER') or 'ukendt'}]: ").strip() or os.getenv("USER") or "ukendt"
+
+        include_py = yes_or_no("Opret component.py?", default="y", style=self.style)
+        include_html = yes_or_no("Opret template.html?", default="y", style=self.style)
+        include_htmx = yes_or_no("Tilføj HTMX support/view?", default="n", style=self.style)
+        include_readme = yes_or_no("Opret README.md og eksempel?", default="y", style=self.style)
+
+        if not include_py and not include_html:
+            raise CommandError("Skal vælge mindst én filtype.")
+
+        context = {
+            "component_name": name,
+            "display_name": display_name,
+            "class_name": class_name,
+            "author": author,
+            "created_at": datetime.now().strftime("%Y-%m-%d"),
+            "uuid": str(uuid.uuid4())
+        }
+
         try:
-            file_contents = {}
-            for filename, content in TEMPLATE_FILES.items():
-                file_contents[filename] = content.format(**context)
-        except KeyError as e:
-            raise CommandError(f"Fejl i skabelon: mangler nøgle {e}")
-
-        # Skriv filerne
-        try:
-            os.makedirs(component_path)
-            for filename, content in file_contents.items():
-                with open(component_path / filename, "w", encoding="utf-8") as f:
+            os.makedirs(path)
+            templates = generate_templates(context, include_py, include_html, include_htmx, include_readme)
+            for filename, content in templates.items():
+                with open(path / filename, "w", encoding="utf-8") as f:
                     f.write(content)
                 self.stdout.write(f"  - Oprettet {filename}")
-            self.stdout.write(self.style.SUCCESS(f"Komponent '{name}' oprettet i '{component_path}'"))
+            self.stdout.write(self.style.SUCCESS(f"✓ Komponent '{name}' oprettet i '{path}'"))
         except Exception as e:
-            if component_path.exists():
-                shutil.rmtree(component_path)
+            if path.exists():
+                shutil.rmtree(path)
             raise CommandError(f"Fejl under oprettelse: {e}")
-    
-        generate_model_class(component_name)
-
-
-

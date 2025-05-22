@@ -1,0 +1,6 @@
+{
+    "label": "Vælg kategori",
+    "options": ["Nyhed", "Artikel", "Begivenhed"],
+    "target_url": "/htmx/dropdown/dropdown_result_view/"
+  }
+  
