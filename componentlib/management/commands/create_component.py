@@ -5,8 +5,12 @@ from django.core.management.base import BaseCommand, CommandError
 from datetime import datetime
 import uuid
 import re
+from componentlib.helpers.codegen import generate_model_class
 
 COMPONENTS_DIR = Path(__file__).resolve().parent.parent.parent / "components"
+
+
+
 
 def yes_or_no(prompt, default="y", style=None):
     default = default.lower()
@@ -105,15 +109,20 @@ class Command(BaseCommand):
 
         if include_py:
             TEMPLATE_FILES["component.py"] = '''from componentlib.components.base import BaseComponent
+from .types import {class_name}Props
 
 class {class_name}(BaseComponent):
-    template_filename = "template.html" 
-    
+    template_filename = "template.html"
+
+    def __init__(self, **kwargs):
+        props = {class_name}Props(**kwargs)
+        super().__init__(**props.dict())
+
     def get_context_data(self):
-        return {{
-            "content": self.context.get("content", "")
-        }}
+        return self.context
 '''
+
+
 
         if include_html:
             TEMPLATE_FILES["template.html"] = '''{% load custom_filters %}
@@ -168,6 +177,8 @@ component_data:
             if component_path.exists():
                 shutil.rmtree(component_path)
             raise CommandError(f"Fejl under oprettelse: {e}")
+    
+        generate_model_class(component_name)
 
 
 

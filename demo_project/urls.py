@@ -21,7 +21,6 @@ from componentlib.views import redirect_to_components
 urlpatterns = [
     path("", redirect_to_components, name="home"),  # ← flyttet hertil!
     path("admin/", admin.site.urls),
-    path("patterns/", include("pattern_library.urls")),
     path("components/", include("componentlib.urls")),
 ]
 
