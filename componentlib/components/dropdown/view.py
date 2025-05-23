@@ -1,10 +1,15 @@
-from django.http import HttpResponse
+import json
+from pathlib import Path
+from django.shortcuts import render
 
-def htmx_view(func):
-    func._is_htmx_view = True
-    return func
+def dropdown_htmx_view(request):
+    base_path = Path(__file__).resolve().parent
+    example_path = base_path / "example.json"
 
-@htmx_view
-def htmx_dropdown_response(request):
-    val = request.GET.get("dropdown", "")
-    return HttpResponse(f"<p>Du valgte: <strong>{val}</strong></p>")
+    context = {}
+
+    if example_path.exists():
+        with open(example_path, "r", encoding="utf-8") as f:
+            context = json.load(f)
+
+    return render(request, "components/dropdown/template.html", context)

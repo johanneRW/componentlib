@@ -52,17 +52,24 @@ class {context["class_name"]}(BaseComponent):
 
     # HTMX view
     if include_htmx:
-        TEMPLATE_FILES["view.py"] = '''from django.http import HttpResponse
+        TEMPLATE_FILES["view.py"] = f'''from django.shortcuts import render
+from .component import {context["class_name"]}
+import json
+from pathlib import Path
 
-def htmx_view(func):
-    func._is_htmx_view = True
-    return func
+def {context["component_name"]}_htmx_view(request):
+    # Prøv at bruge example.json
+    base_path = Path(__file__).resolve().parent
+    example_path = base_path / "example.json"
+    kwargs = {{}}
+    if example_path.exists():
+        with open(example_path, "r") as f:
+            kwargs = json.load(f)
 
-@htmx_view
-def component_result_view(request):
-    val = request.GET.get("value", "")
-    return HttpResponse(f"<p>Du valgte: <strong>{{val}}</strong></p>")
+    component = {context["class_name"]}(**kwargs)
+    return render(request, "components/{context["component_name"]}/template.html", component.get_context_data())
 '''
+
 
     # Eksempeldata
     example_data = {

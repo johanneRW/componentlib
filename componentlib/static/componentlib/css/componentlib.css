@@ -50,3 +50,17 @@
   content: "";
 }
 
+.copy-btn {
+  float: right;
+  margin-top: -2em;
+  margin-right: 0.5em;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.copy-btn:hover {
+  color: black;
+}

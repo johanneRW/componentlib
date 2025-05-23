@@ -38,17 +38,26 @@
  {% endcomment %}
 
  <div class="file-status">
-  <div>
-    <span>Komponent dele:</span>
+  <div class="component-tech">
+    <span>Teknologier:</span>
+  
     <span class="{% if not comp.exists.component_py %}missing{% endif %}">
-      <img class="file-icon" src="/static/icons/django.svg" alt="component icon"> 
-      {% if comp.exists.component_py %}.py{% endif %}
+      <img class="file-icon" src="/static/icons/django.svg" alt="Django">
+      {% if comp.capabilities.has_django %}Django{% endif %}
     </span>
-
+  
     <span class="{% if not comp.exists.template_html %}missing{% endif %}">
-      <img class="file-icon" src="/static/icons/template.svg" alt="template icon"> 
-      {% if comp.exists.template_html %}.html{% endif %}
+      <img class="file-icon" src="/static/icons/template.svg" alt="HTML">
+      {% if comp.capabilities.has_html %}HTML{% endif %}
     </span>
+  
+    {% if comp.capabilities.has_htmx %}
+      <span>
+        <img class="file-icon" src="/static/icons/htmx.svg" alt="HTMX"> HTMX
+      </span>
+    {% endif %}
+  </div>
+    
   </div>
 
   <div>

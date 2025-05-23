@@ -5,7 +5,30 @@
   <meta charset="UTF-8">
   <title>{{ component.name }}</title>
   <link rel="stylesheet" href="{% static '/componentlib/css/componentlib.css' %}">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+  <script>
+    function copyToClipboard(btn) {
+      const code = btn.closest(".import-block").querySelector("code");
+      if (!code) return;
+  
+      navigator.clipboard.writeText(code.innerText).then(() => {
+        const original = btn.innerText;
+        btn.innerText = "✅ Kopieret!";
+        btn.disabled = true;
+        setTimeout(() => {
+          btn.innerText = original;
+          btn.disabled = false;
+        }, 1500);
+      });
+    }
+  </script>
+  
 </head>
+
+
+
+
 <body>
 
 <header>
@@ -59,17 +82,53 @@
       {% endif %}
     </section>
     
+    <hr>
+    <hr>
+    <section class="mt-6">
+      <h2>Importvejledning</h2>
+      <button 
+        class="btn-toggle"
+        hx-get="{% url 'component_import_hint' key=component.key %}" 
+        hx-target="#import-{{ component.key }}" 
+        hx-swap="outerHTML">
+        📦 Vis hvordan du importerer
+      </button>
+    
+      <div id="import-{{ component.key }}" class="import-block">
+        <em>(Klik for at hente importvejledning)</em>
+      </div>
+    </section>
+    
+
     
     <hr>
-<section>
-  <h2>Kode</h2>
-  {% for filename, content in files.items %}
-    <h3>{{ filename }}</h3>
-    <pre><code>{{ content|escape }}</code></pre>
-  {% empty %}
-    <p>Ingen kodefiler tilgængelige.</p>
-  {% endfor %}
-</section>
+    <section>
+      <h2>Kodefiler</h2>
+      {% for filename in code_files %}
+  <div class="code-file">
+    <div>
+      <button
+        hx-get="{% url 'component_code' key=component.key %}?file={{ filename }}" 
+        hx-target="#code-block-{{ filename }}"
+        hx-swap="innerHTML"
+      >
+        Vis/skjul {{ filename }}{% if filename == "template" %}.html{% else %}.py{% endif %}
+      </button>
+    </div>
+
+    <div id="code-block-{{ filename }}"></div>
+  </div>
+{% endfor %}
+
+    
+    
+
+    
+    </section>
+    
+    
+    
+    
 
 
     {% if previous or next %}

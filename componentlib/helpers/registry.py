@@ -2,6 +2,8 @@ import yaml
 import importlib
 import inspect
 from pathlib import Path
+from .htmx_detect import detect_component_capabilities
+
 
 # Internt lager af registrerede komponentklasser
 _component_classes = {}
@@ -35,6 +37,11 @@ def load_all_components_metadata():
                     "example_html",
                 ]
                 exists = data["exists"]
+                
+                template_file = comp_dir / "template.html"
+                capabilities = detect_component_capabilities(template_file)
+                data["capabilities"] = capabilities
+                
                 documentation_score = sum(1 for part in documentation_parts if exists.get(part, False))
 
                 critical_files_count = sum(1 for part in ["component_py", "template_html"] if exists.get(part, False))
@@ -76,3 +83,4 @@ def load_all_components_metadata():
 def get_component_class(name):
     """Hent komponentklasse ud fra mappe-navn (key)"""
     return _component_classes.get(name)
+
