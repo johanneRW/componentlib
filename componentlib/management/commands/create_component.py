@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 COMPONENTS_DIR = Path(__file__).resolve().parent.parent.parent / "components"
 
+
 def yes_or_no(prompt, default="y", style=None):
     default = default.lower()
     valid = {"y": True, "n": False, "": default == "y"}
@@ -21,12 +22,24 @@ def yes_or_no(prompt, default="y", style=None):
             return valid[val]
         print(style.ERROR("Ugyldigt svar. Skriv 'y', 'n' eller 'q'") if style else "Ugyldigt svar.")
 
-def to_pascal_case(snake_str): return ''.join(word.capitalize() for word in snake_str.split('_'))
-def to_title_case(snake_str): return ' '.join(word.capitalize() for word in snake_str.split('_'))
-def to_snake_case(name): return re.sub(r'(?<!^)(?=[A-Z])', '_', name.replace("-", "_")).lower()
-def is_valid_component_name(name): return re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name)
 
-def generate_templates(context, include_py, include_html, include_htmx, include_readme):
+def to_pascal_case(snake_str):
+    return ''.join(word.capitalize() for word in snake_str.split('_'))
+
+
+def to_title_case(snake_str):
+    return ' '.join(word.capitalize() for word in snake_str.split('_'))
+
+
+def to_snake_case(name):
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', name.replace("-", "_")).lower()
+
+
+def is_valid_component_name(name):
+    return re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name)
+
+
+def generate_templates(context, include_py, include_html, include_readme):
     TEMPLATE_FILES = {}
 
     # Python-komponent
@@ -40,7 +53,6 @@ class {context["class_name"]}(BaseComponent):
     def __init__(self, **kwargs):
         props = {context["class_name"]}Props(**kwargs)
         super().__init__(**props.dict())
-        self._validated = True
 '''
 
     # HTML-template
@@ -50,50 +62,20 @@ class {context["class_name"]}(BaseComponent):
 </div>
 '''
 
-    # HTMX view
-    if include_htmx:
-        TEMPLATE_FILES["view.py"] = f'''from django.shortcuts import render
-from .component import {context["class_name"]}
-import json
-from pathlib import Path
-
-def {context["component_name"]}_htmx_view(request):
-    # Prøv at bruge example.json
-    base_path = Path(__file__).resolve().parent
-    example_path = base_path / "example.json"
-    kwargs = {{}}
-    if example_path.exists():
-        with open(example_path, "r") as f:
-            kwargs = json.load(f)
-
-    component = {context["class_name"]}(**kwargs)
-    return render(request, "components/{context["component_name"]}/template.html", component.get_context_data())
-'''
-
-
     # Eksempeldata
     example_data = {
         "content": "Eksempelindhold"
     }
-    if include_htmx:
-        example_data["target_url"] = f"/htmx/{context['component_name']}/component_result_view/"
-
     TEMPLATE_FILES["example.json"] = json.dumps(example_data, indent=2)
 
     # metadata.yaml
-    metadata_inputs = {
-        "  content:\n    type: string\n    required: true\n    default: \"Eksempelindhold\""
-    }
-    if include_htmx:
-        metadata_inputs.add(f"  target_url:\n    type: string\n    required: false\n    default: \"/htmx/{context['component_name']}/component_result_view/\"")
-
-    metadata_inputs_block = "\n".join(sorted(metadata_inputs))
+    metadata_inputs_block = "  content:\n    type: string\n    required: true\n    default: \"Eksempelindhold\""
 
     TEMPLATE_FILES["metadata.yaml"] = f'''name: {context["component_name"]}
 display_name: {context["display_name"]}
 class_name: {context["class_name"]}
 description: Skriv en beskrivelse af komponenten her.
-tags: [{'htmx' if include_htmx else ''}]
+tags: []
 inputs:
 {metadata_inputs_block}
 returns: html
@@ -109,8 +91,6 @@ component_data:
         f"class {context['class_name']}Props(BaseModel):",
         "    content: str = Field(\"Eksempelindhold\")"
     ]
-    if include_htmx:
-        props_lines.append(f"    target_url: str = Field(\"/htmx/{context['component_name']}/component_result_view/\")")
 
     TEMPLATE_FILES["props.py"] = "\n".join(props_lines) + "\n"
 
@@ -122,7 +102,7 @@ component_data:
 
 
 class Command(BaseCommand):
-    help = "Interaktiv oprettelse af ny Django/HTMX-komponent"
+    help = "Interaktiv oprettelse af ny Django-komponent"
 
     def handle(self, *args, **options):
         while True:
@@ -150,7 +130,6 @@ class Command(BaseCommand):
 
         include_py = yes_or_no("Opret component.py?", default="y", style=self.style)
         include_html = yes_or_no("Opret template.html?", default="y", style=self.style)
-        include_htmx = yes_or_no("Tilføj HTMX support/view?", default="n", style=self.style)
         include_readme = yes_or_no("Opret README.md og eksempel?", default="y", style=self.style)
 
         if not include_py and not include_html:
@@ -167,7 +146,7 @@ class Command(BaseCommand):
 
         try:
             os.makedirs(path)
-            templates = generate_templates(context, include_py, include_html, include_htmx, include_readme)
+            templates = generate_templates(context, include_py, include_html, include_readme)
             for filename, content in templates.items():
                 with open(path / filename, "w", encoding="utf-8") as f:
                     f.write(content)

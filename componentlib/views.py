@@ -153,9 +153,14 @@ from pathlib import Path
 from django.http import HttpResponse
 
 
+import yaml
+import json
+from pathlib import Path
+from django.http import HttpResponse
+
+
 def component_import_hint(request, key):
     class_name = "".join([part.capitalize() for part in key.split("_")])
-    view_name = f"{key}_htmx_view"
     base_path = Path(__file__).resolve().parent / "components" / key
 
     # Læs metadata.yaml (valgfrit)
@@ -166,52 +171,40 @@ def component_import_hint(request, key):
             metadata = yaml.safe_load(f)
 
     # Læs example.json (valgfrit)
-    example_path = base_path / "example.json"
     example_data = {}
+    example_path = base_path / "example.json"
     if example_path.exists():
         with open(example_path, "r", encoding="utf-8") as f:
             example_data = json.load(f)
 
-    # Lav kwargs til Python-eksempel
+    # Lav kwargs string til Python-eksempel
     inputs = metadata.get("inputs", {})
-    kwargs_list = []
-    for name, info in inputs.items():
-        val = example_data.get(name, info.get("default", ""))
+    python_kwargs_list = []
+    template_kwargs_list = []
+    for name in inputs.keys():
+        val = example_data.get(name, f"'{name}'")
         val_repr = f'"{val}"' if isinstance(val, str) else str(val)
-        kwargs_list.append(f"{name}={val_repr}")
-    kwargs_str = ", ".join(kwargs_list)
+        python_kwargs_list.append(f"{name}={val_repr}")
+        template_kwargs_list.append(f"{name}={val_repr}")
+
+    python_kwargs_str = ", ".join(python_kwargs_list)
+    template_kwargs_str = " ".join(template_kwargs_list)
 
     html = f"""
-<h3>Django komponent</h3>
+<h3>Django komponent (Python)</h3>
 <div class="import-block">
   <button class="copy-btn" onclick="copyToClipboard(this)">📋</button>
   <pre><code>from componentlib.components.{key}.component import {class_name}Component
 
-# Eksempel:
-component = {class_name}Component({kwargs_str})
-html = component.render()
+# Initiering:
+{class_name}Component({python_kwargs_str})
 </code></pre>
 </div>
 
-<h3>HTMX komponent</h3>
+<h3>Django komponent (template)</h3>
 <div class="import-block">
   <button class="copy-btn" onclick="copyToClipboard(this)">📋</button>
-  <pre><code>from componentlib.components.{key}.view import {view_name}
-
-# urls.py i dit projekt:
-path("htmx/{key}/", {view_name}, name="{view_name}")
-
-# template.html i dit projekt:
-&lt;div 
-  hx-get="{{% url '{view_name}' %}}" 
-  hx-target="#target-{key}" 
-  hx-swap="innerHTML"&gt;
-&lt;/div&gt;
-
-&lt;div id="target-{key}"&gt;&lt;/div&gt;
-
-&lt;script src="https://unpkg.com/htmx.org@1.9.10"&gt;&lt;/script&gt;
-</code></pre>
+  <pre><code>{{% include "components/{key}/template.html" with {template_kwargs_str} %}}</code></pre>
 </div>
 """
 
