@@ -41,22 +41,26 @@
   <div class="component-tech">
     <span>Teknologier:</span>
   
-    <span class="{% if not comp.exists.component_py %}missing{% endif %}">
-      <img class="file-icon" src="/static/icons/django.svg" alt="Django">
-      {% if comp.capabilities.has_django %}Django{% endif %}
-    </span>
-  
-    <span class="{% if not comp.exists.template_html %}missing{% endif %}">
-      <img class="file-icon" src="/static/icons/template.svg" alt="HTML">
-      {% if comp.capabilities.has_html %}HTML{% endif %}
-    </span>
-  
-    {% if comp.capabilities.has_htmx %}
-      <span>
-        <img class="file-icon" src="/static/icons/htmx.svg" alt="HTMX"> HTMX
-      </span>
-    {% endif %}
-  </div>
+    {% if comp.exists.component_py %}
+  <span>
+    <img class="file-icon" src="/static/icons/django.svg" alt="Django">
+    Django
+  </span>
+{% endif %}
+
+{% if comp.capabilities.has_simple_html %}
+  <span>
+    <img class="file-icon" src="/static/icons/template.svg" alt="HTML">
+    HTML
+  </span>
+{% endif %}
+
+{% if comp.capabilities.has_htmx %}
+  <span>
+    <img class="file-icon" src="/static/icons/htmx.svg" alt="HTMX">
+    HTMX
+  </span>
+{% endif %}
     
   </div>
 
@@ -77,9 +81,6 @@
       {% if comp.exists.readme_md %}.md{% endif %}
     </span>
 
-    <span class="{% if not comp.exists.example_html %}missing{% endif %}">
-      <img class="file-icon" src="/static/icons/example_html.svg" alt="example html icon"> 
-      {% if comp.exists.example_html %}.html{% endif %}
-    </span>
+   
   </div>
 </div>

@@ -19,46 +19,40 @@ def load_all_components_metadata():
                 data = yaml.safe_load(f)
                 data["key"] = comp_dir.name
 
-                # Tjek hvilke filer der eksisterer
+                # Check eksisterende filer
                 data["exists"] = {
                     "component_py": (comp_dir / "component.py").exists(),
                     "template_html": (comp_dir / "template.html").exists(),
                     "metadata_yaml": meta_file.exists(),
                     "readme_md": (comp_dir / "README.md").exists(),
                     "example_json": (comp_dir / "example.json").exists(),
-                    "example_html": (comp_dir / "example.html").exists(),
                 }
 
-                # Dokumentations-score
-                documentation_parts = [
-                    "metadata_yaml",
-                    "readme_md",
-                    "example_json",
-                    "example_html",
-                ]
-                exists = data["exists"]
-                
+                # Metadata-tags fra YAML
+                metadata_tags = data.get("tags", [])
+                data["tags"] = metadata_tags  # ← kun brugerdefinerede tags
+
+                # Find capabilities
                 template_file = comp_dir / "template.html"
                 capabilities = detect_component_capabilities(template_file)
-                data["capabilities"] = capabilities
-                
-                documentation_score = sum(1 for part in documentation_parts if exists.get(part, False))
+                data["capabilities"] = capabilities  # gem også raw capabilities
 
-                critical_files_count = sum(1 for part in ["component_py", "template_html"] if exists.get(part, False))
+                # Byg system-teknologier
+                system_technologies = []
+                if data["exists"]["component_py"]:
+                    system_technologies.append("django")
+                if capabilities["has_htmx"]:
+                    system_technologies.append("htmx")
+                elif capabilities["has_simple_html"]:
+                    system_technologies.append("html")
 
-                data["completeness"] = {
-                    "documentation_score": documentation_score,
-                    "documentation_total": len(documentation_parts),
-                    "critical_files_count": critical_files_count,
-                    "critical_files_total": 2,
-                }
+                data["technologies"] = system_technologies  # ← system-tags gemt her
 
                 # Forsøg at importere komponentklassen
                 try:
                     module_path = f"componentlib.components.{comp_dir.name}.component"
                     module = importlib.import_module(module_path)
 
-                    # Find klasser der ender på 'Component' og er defineret i dette modul
                     component_classes = [
                         obj for name, obj in inspect.getmembers(module, inspect.isclass)
                         if name.endswith("Component") and obj.__module__ == module.__name__
@@ -67,7 +61,7 @@ def load_all_components_metadata():
                     if component_classes:
                         cls = component_classes[0]
                         data["class_name"] = cls.__name__
-                        _component_classes[comp_dir.name] = cls  # ← Registrér klassen
+                        _component_classes[comp_dir.name] = cls
                     else:
                         data["class_name"] = None
                         data["import_error"] = "No class ending in 'Component' found"
@@ -79,6 +73,9 @@ def load_all_components_metadata():
                 components.append(data)
 
     return components
+
+
+
 
 def get_component_class(name):
     """Hent komponentklasse ud fra mappe-navn (key)"""
