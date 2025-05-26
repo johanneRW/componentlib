@@ -1,213 +1,75 @@
-from django.shortcuts import render, redirect
-from .helpers.registry import load_all_components_metadata
-from .helpers.preview import render_component_preview
-from rapidfuzz import fuzz
-from django.http import HttpResponse, Http404, HttpResponseNotFound
+import time
+import sys
+import subprocess
 from pathlib import Path
-from django.utils.html import escape
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
-def redirect_to_components(request):
-    return redirect("component_browser")
+COMPONENTS_DIR = Path(__file__).resolve().parent.parent / "componentlib" / "components"
 
-def component_browser(request):
-    q = request.GET.get("q", "").strip().lower()
-    raw_tags = request.GET.get("tags", "")
-    selected_tags = [t.strip().lower() for t in raw_tags.split(",") if t.strip()]
+# Cooldown-måler pr. komponent
+last_run = {}
+
+COOLDOWN_SECONDS = 2  # minimum tid mellem triggers pr. komponent
 
 
-    all_components = load_all_components_metadata()
+def should_run(component_name):
+    now = time.time()
+    if component_name not in last_run or now - last_run[component_name] > COOLDOWN_SECONDS:
+        last_run[component_name] = now
+        return True
+    return False
 
-    # Render preview
-    for c in all_components:
-        c["rendered"] = render_component_preview(c["key"])
 
-    # Filtrér på tag hvis valgt
-    if selected_tags:
-        all_components = [
-            c for c in all_components
-            if all(
-                tag in [t.lower() for t in c.get("tags", []) if isinstance(t, str)]
-                for tag in selected_tags
+class ComponentChangeHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if event.is_directory:
+            return
+
+        changed_path = Path(event.src_path)
+
+        if changed_path.name not in ["metadata.yaml", "component.py"]:
+            return  # kun reagér på specifikke filer
+
+        # Find nærmeste komponentmappe
+        component_dir = changed_path.parent
+        while component_dir.parent != COMPONENTS_DIR and component_dir != COMPONENTS_DIR:
+            component_dir = component_dir.parent
+
+        component_name = component_dir.name
+
+        if not should_run(component_name):
+            print(f"[SKIP] Change throttled for: {component_name}")
+            return
+
+        print(f"[WATCH] 🔁 Change detected in: {component_name}")
+
+        try:
+            subprocess.run(
+                [sys.executable, "manage.py", "generate_component_model", component_name],
+                check=True
             )
-    ]
-        
-    for comp in all_components:
-        tags = [t.lower() for t in comp.get("tags", []) if isinstance(t, str)]
-        comp["tag_match"] = any(tag in tags for tag in selected_tags)
+            print(f"[OK] Regenerated model for {component_name}")
+        except subprocess.CalledProcessError as e:
+            print(f"[ERROR] Failed to generate model for {component_name}")
+            print(e)
 
 
-    # Sortér til oversigt
-    all_components.sort(key=lambda c: c["name"].lower())
+def main():
+    print("[WATCH] Watching component metadata and logic... (Ctrl+C to stop)")
+    event_handler = ComponentChangeHandler()
+    observer = Observer()
+    observer.schedule(event_handler, str(COMPONENTS_DIR), recursive=True)
 
-    # Match via navn + beskrivelse + tags (kun hvis søgeord givet)
-    matched_components = []
-    if q:
-        for c in all_components:
-            haystack = " ".join([
-                c.get("name", ""),
-                c.get("description", ""),
-                " ".join([t for t in c.get("tags", []) if isinstance(t, str)]),
-            ]).lower()
-
-            if q in haystack:
-                c["match_type"] = "substring"
-                matched_components.append(c)
-            else:
-                score = fuzz.partial_ratio(q, haystack)
-                if score > 60:
-                    c["fuzzy_score"] = score
-                    c["match_type"] = "fuzzy"
-                    matched_components.append(c)
-
-        matched_components.sort(key=lambda x: x.get("fuzzy_score", 0), reverse=True)
-    else:
-        matched_components = all_components
-
-    # Saml alle tags
-    tag_set = set()
-    for c in load_all_components_metadata():  # alle, ikke filtrerede
-        tag_set.update(t.lower() for t in c.get("tags", []) if isinstance(t, str))
-
-    return render(request, "patternlib_browser/index.html", {
-        "components": all_components,
-        "matches": matched_components,
-        "q": q,
-        "selected_tags": selected_tags,
-        "all_tags": sorted(tag_set),
-        "only_fuzzy": q and all(m.get("match_type") == "fuzzy" for m in matched_components),
-    })
-
-    
-    
-def component_detail(request, key):
-    from .helpers.preview import render_component_preview
-    from .helpers.registry import load_all_components_metadata
-    from pathlib import Path
-    
-    base_path = Path(__file__).resolve().parent / "components" / key
-    
-    code_files = []
-    for f in ["template", "component", "props", "view"]:
-        ext = ".html" if f == "template" else ".py"
-        if (base_path / f"{f}.{ext.lstrip('.')}").exists():
-            code_files.append(f)
-
-    components = sorted(load_all_components_metadata(), key=lambda c: c["name"].lower())
-    index = next((i for i, c in enumerate(components) if c["key"] == key), None)
-
-    if index is None:
-        return render(request, "404.html", status=404)
-
-    component = components[index]
-    component["key"] = key
-    component["rendered"] = render_component_preview(key)
-    
-
-    # Læs relevante kodefiler
-    base_path = Path(__file__).resolve().parent / "components" / key
-    file_names = ["template.html", "component.py", "metadata.yaml", "example.json", "README.md"]
-    files = {}
-    for fname in file_names:
-        path = base_path / fname
-        if path.exists():
-            files[fname] = path.read_text(encoding="utf-8")
-
-    previous = components[index - 1] if index > 0 else None
-    next_comp = components[index + 1] if index < len(components) - 1 else None
-
-    return render(request, "patternlib_browser/component_detail.html", {
-    "component": component,
-    "previous": previous,
-    "next": next_comp,
-    "code_files": code_files,
-})
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\n[WATCH] Stopping watcher.")
+        observer.stop()
+    observer.join()
 
 
-
-from django.http import HttpResponse, HttpResponseNotFound
-from pathlib import Path
-from django.utils.html import escape
-
-def component_code(request, key):
-    filename = request.GET.get("file")
-    if not filename:
-        return HttpResponseNotFound("Filnavn mangler.")
-
-    ext = ".html" if filename == "template" else ".py"
-    file_path = Path(__file__).resolve().parent / "components" / key / f"{filename}{ext}"
-
-    if not file_path.exists():
-        return HttpResponseNotFound("Filen blev ikke fundet.")
-
-    code = file_path.read_text(encoding="utf-8")
-    safe_code = escape(code)
-
-    html = f"<pre><code>{safe_code}</code></pre>"
-    return HttpResponse(html)
-
-
-
-import yaml
-import json
-from pathlib import Path
-from django.http import HttpResponse
-
-
-import yaml
-import json
-from pathlib import Path
-from django.http import HttpResponse
-
-
-def component_import_hint(request, key):
-    class_name = "".join([part.capitalize() for part in key.split("_")])
-    base_path = Path(__file__).resolve().parent / "components" / key
-
-    # Læs metadata.yaml (valgfrit)
-    metadata = {}
-    meta_path = base_path / "metadata.yaml"
-    if meta_path.exists():
-        with open(meta_path, "r", encoding="utf-8") as f:
-            metadata = yaml.safe_load(f)
-
-    # Læs example.json (valgfrit)
-    example_data = {}
-    example_path = base_path / "example.json"
-    if example_path.exists():
-        with open(example_path, "r", encoding="utf-8") as f:
-            example_data = json.load(f)
-
-    # Lav kwargs string til Python-eksempel
-    inputs = metadata.get("inputs", {})
-    python_kwargs_list = []
-    template_kwargs_list = []
-    for name in inputs.keys():
-        val = example_data.get(name, f"'{name}'")
-        val_repr = f'"{val}"' if isinstance(val, str) else str(val)
-        python_kwargs_list.append(f"{name}={val_repr}")
-        template_kwargs_list.append(f"{name}={val_repr}")
-
-    python_kwargs_str = ", ".join(python_kwargs_list)
-    template_kwargs_str = " ".join(template_kwargs_list)
-
-    html = f"""
-<h3>Django komponent (Python)</h3>
-<div class="import-block">
-  <button class="copy-btn" onclick="copyToClipboard(this)">📋</button>
-  <pre><code>from componentlib.components.{key}.component import {class_name}Component
-
-# Initiering:
-{class_name}Component({python_kwargs_str})
-</code></pre>
-</div>
-
-<h3>Django komponent (template)</h3>
-<div class="import-block">
-  <button class="copy-btn" onclick="copyToClipboard(this)">📋</button>
-  <pre><code>{{% include "components/{key}/template.html" with {template_kwargs_str} %}}</code></pre>
-</div>
-"""
-
-    return HttpResponse(html)
-
-
+if __name__ == "__main__":
+    main()
