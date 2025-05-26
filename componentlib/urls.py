@@ -9,6 +9,5 @@ urlpatterns = [
     path("components/<str:key>/code/", views.component_code, name="component_code"),
     path("components/<str:key>/import/", views.component_import_hint, name="component_import_hint"),
 
-
     *htmx_urls,
 ]

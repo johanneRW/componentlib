@@ -130,35 +130,21 @@ from django.utils.html import escape
 
 def component_code(request, key):
     filename = request.GET.get("file")
-    hide = request.GET.get("hide") == "true"
+    if not filename:
+        return HttpResponseNotFound("Filnavn mangler.")
 
-    # Skjul logik – returnér tomt HTML
-    if hide:
-        return HttpResponse("")
-
-    # Find filstien
     ext = ".html" if filename == "template" else ".py"
     file_path = Path(__file__).resolve().parent / "components" / key / f"{filename}{ext}"
 
     if not file_path.exists():
         return HttpResponseNotFound("Filen blev ikke fundet.")
 
-    # Læs og escap koden
     code = file_path.read_text(encoding="utf-8")
     safe_code = escape(code)
 
-    # Returnér HTML med "Skjul"-knap der laver ny GET med ?hide=true
-    html = f"""
-      <div>
-        <button
-          hx-get="{request.build_absolute_uri()}&hide=true"
-          hx-target="#code-block-{filename}"
-          hx-swap="innerHTML"
-        >Skjul</button>
-        <pre><code>{safe_code}</code></pre>
-      </div>
-    """
+    html = f"<pre><code>{safe_code}</code></pre>"
     return HttpResponse(html)
+
 
 
 import yaml
@@ -230,4 +216,5 @@ path("htmx/{key}/", {view_name}, name="{view_name}")
 """
 
     return HttpResponse(html)
+
 
