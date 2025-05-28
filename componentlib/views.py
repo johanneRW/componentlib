@@ -1,4 +1,8 @@
 from django.shortcuts import render, redirect
+
+from componentlib.helpers.component_import_hint_html import component_import_hint_html
+
+
 from .helpers.registry import load_all_components_metadata
 from .helpers.preview import render_component_preview
 from rapidfuzz import fuzz
@@ -17,32 +21,35 @@ def component_browser(request):
 
     all_components = load_all_components_metadata()
 
-    # Render preview
+    # Render previews
     for c in all_components:
         c["rendered"] = render_component_preview(c["key"])
 
-    # Filtrér på tag hvis valgt
+    # Start med hele listen
+    tag_filtered_components = all_components
+
+    # Filtrér på tags (hvis valgt)
     if selected_tags:
-        all_components = [
+        tag_filtered_components = [
             c for c in all_components
             if all(
                 tag in [t.lower() for t in c.get("tags", []) if isinstance(t, str)]
                 for tag in selected_tags
             )
-    ]
-        
-    for comp in all_components:
+        ]
+
+    # Sæt tag-match flag (til visning)
+    for comp in tag_filtered_components:
         tags = [t.lower() for t in comp.get("tags", []) if isinstance(t, str)]
         comp["tag_match"] = any(tag in tags for tag in selected_tags)
 
+    # Sorter alfabetisk
+    tag_filtered_components.sort(key=lambda c: c["name"].lower())
 
-    # Sortér til oversigt
-    all_components.sort(key=lambda c: c["name"].lower())
-
-    # Match via navn + beskrivelse + tags (kun hvis søgeord givet)
-    matched_components = []
+    # Søgning (hvis q angivet)
     if q:
-        for c in all_components:
+        matched_components = []
+        for c in tag_filtered_components:
             haystack = " ".join([
                 c.get("name", ""),
                 c.get("description", ""),
@@ -61,21 +68,29 @@ def component_browser(request):
 
         matched_components.sort(key=lambda x: x.get("fuzzy_score", 0), reverse=True)
     else:
-        matched_components = all_components
+        matched_components = tag_filtered_components
 
-    # Saml alle tags
+    # Saml alle tags (fra hele dataset)
     tag_set = set()
-    for c in load_all_components_metadata():  # alle, ikke filtrerede
+    for c in all_components:
         tag_set.update(t.lower() for t in c.get("tags", []) if isinstance(t, str))
 
-    return render(request, "patternlib_browser/index.html", {
+    context = {
         "components": all_components,
         "matches": matched_components,
         "q": q,
         "selected_tags": selected_tags,
         "all_tags": sorted(tag_set),
         "only_fuzzy": q and all(m.get("match_type") == "fuzzy" for m in matched_components),
-    })
+    }
+
+    if request.headers.get("Hx-Request") == "true":
+        # HTMX-anmodning → returnér kun partial-template
+        return render(request, "patternlib_browser/results_partial.html", context)
+    else:
+        # Almindelig sideindlæsning → returnér hele layoutet
+        return render(request, "patternlib_browser/index.html", context)
+
 
     
     
@@ -83,14 +98,23 @@ def component_detail(request, key):
     from .helpers.preview import render_component_preview
     from .helpers.registry import load_all_components_metadata
     from pathlib import Path
-    
+
     base_path = Path(__file__).resolve().parent / "components" / key
-    
+
+    # Først tjek de almindelige kodefiler (template, component, props)
     code_files = []
-    for f in ["template", "component", "props", "view"]:
+    for f in ["template", "component", "props"]:
         ext = ".html" if f == "template" else ".py"
-        if (base_path / f"{f}.{ext.lstrip('.')}").exists():
+        file_path = base_path / f"{f}.{ext.lstrip('.')}"
+        if file_path.exists():
             code_files.append(f)
+
+    # Derefter tjek for readme (uanset case)
+    for fname in base_path.iterdir():
+        if fname.name.lower() == "readme.md":
+            code_files.append("readme")
+            break
+
 
     components = sorted(load_all_components_metadata(), key=lambda c: c["name"].lower())
     index = next((i for i, c in enumerate(components) if c["key"] == key), None)
@@ -101,10 +125,12 @@ def component_detail(request, key):
     component = components[index]
     component["key"] = key
     component["rendered"] = render_component_preview(key)
-    
+    hint_data = component_import_hint_html(component['key'])
+    component['import_hint'] = hint_data['html']
+    component['example_data_block'] = hint_data['example_block']
 
-    # Læs relevante kodefiler
-    base_path = Path(__file__).resolve().parent / "components" / key
+
+    # Læs relevante kodefiler (bruges måske andetsteds)
     file_names = ["template.html", "component.py", "metadata.yaml", "example.json", "README.md"]
     files = {}
     for fname in file_names:
@@ -116,11 +142,12 @@ def component_detail(request, key):
     next_comp = components[index + 1] if index < len(components) - 1 else None
 
     return render(request, "patternlib_browser/component_detail.html", {
-    "component": component,
-    "previous": previous,
-    "next": next_comp,
-    "code_files": code_files,
-})
+        "component": component,
+        "previous": previous,
+        "next": next_comp,
+        "code_files": code_files,
+    })
+
 
 
 
@@ -133,81 +160,34 @@ def component_code(request, key):
     if not filename:
         return HttpResponseNotFound("Filnavn mangler.")
 
-    ext = ".html" if filename == "template" else ".py"
-    file_path = Path(__file__).resolve().parent / "components" / key / f"{filename}{ext}"
+    base_path = Path(__file__).resolve().parent / "components" / key
+
+    if filename == "template":
+        file_path = base_path / "template.html"
+    elif filename == "component":
+        file_path = base_path / "component.py"
+    elif filename == "props":
+        file_path = base_path / "props.py"
+    elif filename == "readme":
+        # Find README uanset case
+        file_path = None
+        for fname in base_path.iterdir():
+            if fname.name.lower() == "readme.md":
+                file_path = fname
+                break
+        if not file_path:
+            return HttpResponseNotFound("README.md ikke fundet.")
+    else:
+        return HttpResponseNotFound("Ukendt filtype.")
 
     if not file_path.exists():
         return HttpResponseNotFound("Filen blev ikke fundet.")
 
     code = file_path.read_text(encoding="utf-8")
-    safe_code = escape(code)
-
-    html = f"<pre><code>{safe_code}</code></pre>"
-    return HttpResponse(html)
-
-
-
-import yaml
-import json
-from pathlib import Path
-from django.http import HttpResponse
-
-
-import yaml
-import json
-from pathlib import Path
-from django.http import HttpResponse
-
-
-def component_import_hint(request, key):
-    class_name = "".join([part.capitalize() for part in key.split("_")])
-    base_path = Path(__file__).resolve().parent / "components" / key
-
-    # Læs metadata.yaml (valgfrit)
-    metadata = {}
-    meta_path = base_path / "metadata.yaml"
-    if meta_path.exists():
-        with open(meta_path, "r", encoding="utf-8") as f:
-            metadata = yaml.safe_load(f)
-
-    # Læs example.json (valgfrit)
-    example_data = {}
-    example_path = base_path / "example.json"
-    if example_path.exists():
-        with open(example_path, "r", encoding="utf-8") as f:
-            example_data = json.load(f)
-
-    # Lav kwargs string til Python-eksempel
-    inputs = metadata.get("inputs", {})
-    python_kwargs_list = []
-    template_kwargs_list = []
-    for name in inputs.keys():
-        val = example_data.get(name, f"'{name}'")
-        val_repr = f'"{val}"' if isinstance(val, str) else str(val)
-        python_kwargs_list.append(f"{name}={val_repr}")
-        template_kwargs_list.append(f"{name}={val_repr}")
-
-    python_kwargs_str = ", ".join(python_kwargs_list)
-    template_kwargs_str = " ".join(template_kwargs_list)
-
-    html = f"""
-<h3>Django komponent (Python)</h3>
-<div class="import-block">
-  <button class="copy-btn" onclick="copyToClipboard(this)">📋</button>
-  <pre><code>from componentlib.components.{key}.component import {class_name}Component
-
-# Initiering:
-{class_name}Component({python_kwargs_str})
-</code></pre>
-</div>
-
-<h3>Django komponent (template)</h3>
-<div class="import-block">
-  <button class="copy-btn" onclick="copyToClipboard(this)">📋</button>
-  <pre><code>{{% include "components/{key}/template.html" with {template_kwargs_str} %}}</code></pre>
-</div>
-"""
-
-    return HttpResponse(html)
-
-
+    if filename == "readme":
+    # Send RAW markdown tekst, ikke wrapped i <pre><code>
+        return HttpResponse(code)
+    else:
+        safe_code = escape(code)
+        html = f"<pre><code>{safe_code}</code></pre>"
+        return HttpResponse(html)

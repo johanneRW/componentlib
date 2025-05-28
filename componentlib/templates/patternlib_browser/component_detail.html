@@ -7,6 +7,9 @@
     <title>{{ component.name }}</title>
     <link rel="stylesheet" href="{% static 'componentlib/css/componentlib.css' %}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+   
+
     <script src="{% static 'componentlib/js/componentlib.js' %}"></script>
   </head>
 <body>
@@ -56,25 +59,27 @@
         {% endif %}
       </div>
     
-      
+      {% if component.example_data_block %}
+        <hr>
+        <section>
+          <h3>Eksempeldata</h3>
+          <pre><code>{{ component.example_data_block }}</code></pre>
+          <button class="copy-btn" onclick="copySpecificCode('example-data-{{ component.key }}')">📋 Kopier eksempeldata</button>
+        </section>
+      {% endif %}
+    </section>
     
- 
     <hr>
     <section class="mt-6">
       <h2>Importvejledning</h2>
-      <button 
-        onclick="toggleImport(this, '{{ component.key }}')"
-        data-loaded="false"
-        data-url="{% url 'component_import_hint' key=component.key %}">
-        📦 Vis hvordan du importerer
-      </button>
-    
-      <div id="import-{{ component.key }}" class="import-block" style="display: none;">
-        <em>(Klik for at hente importvejledning)</em>
+      <p class="hint-text">
+    Husk at erstatte <code>...</code> eller <code>value</code> med dine egne værdier fra projektet data-formatet er vist i eksempeldata ovenfor.
+      </p>
+      <div class="import-block">
+        {{ component.import_hint|safe }}
       </div>
+      
     </section>
-    
-
     
   <hr>
   <section>
@@ -86,13 +91,18 @@
             onclick="toggleCode(this, '{{ filename }}')" 
             data-loaded="false"
             data-url="{% url 'component_code' key=component.key %}?file={{ filename }}">
-            Vis {{ filename }}{% if filename == "template" %}.html{% else %}.py{% endif %}
+            Vis {{ filename }}
+            {% if filename == "template" %}.html
+            {% elif filename == "readme" %}.md
+            {% else %}.py
+            {% endif %}
           </button>
         </div>
         <div id="code-block-{{ filename }}" style="display: none;"></div>
       </div>
     {% endfor %}
   </section>
+  
   
 
     {% if previous or next %}

@@ -1,4 +1,4 @@
-{% load custom_filters static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="da">
 <head>
@@ -6,7 +6,6 @@
   <title>Komponentbibliotek</title>
   <link rel="stylesheet" href="{% static '/componentlib/css/componentlib.css' %}">
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
 </head>
 <body>
 
@@ -14,79 +13,9 @@
   <h1>Komponentbibliotek</h1>
 </header>
 
-<section>
-  <form hx-get="." hx-target="#results" hx-push-url="true">
-    <input type="text" name="q" value="{{ q }}" placeholder="Søg komponenter..." />
-    <button type="submit">Søg</button>
-  </form>
+<section id="results">
+  {% include "patternlib_browser/results_partial.html" %}
 </section>
-
-{% if selected_tags %}
-  <section aria-label="Aktive tags">
-    <p><strong>Aktive tags:</strong>
-      {% for tag in selected_tags %}
-        <span class="active-tag">{{ tag }}</span>{% if not forloop.last %}, {% endif %}
-      {% endfor %}
-      [<a href="?">Fjern alle</a>]
-    </p>
-  </section>
-{% endif %}
-
-<section aria-label="Filtrér efter tags">
-  <h2>🏷 Filtrér efter tags:</h2>
-  <nav class="tag-nav">
-    {% for t in all_tags %}
-      {% with t_lower=t|lower %}
-        {% if t_lower in selected_tags %}
-          <a href="?tags={{ selected_tags|exclude:t_lower|join:',' }}" class="tag-link selected">✔ {{ t }}</a>
-        {% else %}
-          {% with tag_string=selected_tags|join:',' %}
-            <a href="?tags={% if tag_string %}{{ tag_string }},{% endif %}{{ t }}" class="tag-link">{{ t }}</a>
-          {% endwith %}
-        {% endif %}
-      {% endwith %}
-    {% endfor %}
-  </nav>
-</section>
-
-<hr>
-
-<section>
-  <a href="?only=incomplete" class="incomplete-link">
-    🚧 Vis kun ufuldstændige komponenter
-  </a>
-</section>
-
-<section aria-label="Komponentliste">
-  <h2>Alfabetisk oversigt over tilgængelige komponenter</h2>
-  <ul class="component-list">
-    {% for comp in components %}
-      <li class="component-list-item">
-        {% include "patternlib_browser/fragments/component_card.html" with comp=comp %}
-      </li>
-    {% endfor %}
-  </ul>
-</section>
-
-<hr>
-
-{% if q or selected_tags %}
-  <section id="results" aria-label="Søgeresultater">
-    <h2>Søgeresultater</h2>
-
-    {% if only_fuzzy %}
-      <p><em>Ingen eksakte matches – her er forslag baseret på fuzzy søgning:</em></p>
-    {% endif %}
-
-    {% if matches %}
-      {% for comp in matches %}
-        {% include "patternlib_browser/fragments/component_card.html" with comp=comp %}
-      {% endfor %}
-    {% else %}
-      <p>Ingen komponenter fundet.</p>
-    {% endif %}
-  </section>
-{% endif %}
 
 </body>
 </html>

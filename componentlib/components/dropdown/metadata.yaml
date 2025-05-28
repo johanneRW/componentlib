@@ -2,7 +2,7 @@ name: dropdown
 display_name: Dropdown
 class_name: DropdownComponent
 description: HTMX-baseret dropdown-komponent uden JavaScript
-tags: [htmx, dropdown, form]
+tags: [dropdown, form]
 inputs:
   label:
     type: string

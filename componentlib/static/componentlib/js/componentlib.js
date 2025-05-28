@@ -16,26 +16,35 @@ function copyToClipboard(btn) {
   async function toggleCode(button, filename) {
     const target = document.getElementById('code-block-' + filename);
     const loaded = button.getAttribute('data-loaded') === 'true';
-  
+
     if (!loaded) {
-      const url = button.getAttribute('data-url');
-      try {
-        const res = await fetch(url);
-        const html = await res.text();
-        target.innerHTML = html;
-        target.style.display = 'block';
-        button.textContent = button.textContent.replace('Vis', 'Skjul');
-        button.setAttribute('data-loaded', 'true');
-      } catch (err) {
-        target.innerHTML = '<p>Fejl ved hentning af kode.</p>';
-        target.style.display = 'block';
-      }
+        const url = button.getAttribute('data-url');
+        try {
+            const res = await fetch(url);
+            const rawContent = await res.text();
+
+            if (filename === 'readme') {
+              // Render markdown med GitHub-styling
+              target.innerHTML = `<div class="markdown-body">${marked.parse(rawContent)}</div>`;
+          } else {
+              target.innerHTML = rawContent;
+          }
+          
+
+            target.style.display = 'block';
+            button.textContent = button.textContent.replace('Vis', 'Skjul');
+            button.setAttribute('data-loaded', 'true');
+        } catch (err) {
+            target.innerHTML = '<p>Fejl ved hentning af kode.</p>';
+            target.style.display = 'block';
+        }
     } else {
-      const isVisible = target.style.display !== 'none';
-      target.style.display = isVisible ? 'none' : 'block';
-      button.textContent = button.textContent.replace(isVisible ? 'Skjul' : 'Vis', isVisible ? 'Vis' : 'Skjul');
+        const isVisible = target.style.display !== 'none';
+        target.style.display = isVisible ? 'none' : 'block';
+        button.textContent = button.textContent.replace(isVisible ? 'Skjul' : 'Vis', isVisible ? 'Vis' : 'Skjul');
     }
-  }
+}
+
   
   async function toggleImport(button, key) {
     const block = document.getElementById('import-' + key);
