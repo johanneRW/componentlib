@@ -1,0 +1,17 @@
+{% load custom_filters %}
+<section aria-label="Filtrér efter teknologi">
+    <h2>⚙️ Filtrér efter teknologi:</h2>
+    <nav class="tag-nav">
+        {% for t in all_tech %}
+            {% with t_lower=t|lower %}
+                {% if t_lower in selected_tech %}
+                    <a href="?tech={{ selected_tech|exclude:t_lower|join:',' }}{% if selected_tags %}&tags={{ selected_tags|join:',' }}{% endif %}" class="tag-link selected">✔ {{ t|capfirst }}</a>
+                {% else %}
+                    {% with tech_string=selected_tech|join:',' %}
+                        <a href="?tech={% if tech_string %}{{ tech_string }},{% endif %}{{ t }}{% if selected_tags %}&tags={{ selected_tags|join:',' }}{% endif %}" class="tag-link">{{ t|capfirst }}</a>
+                    {% endwith %}
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+    </nav>
+</section>

@@ -1,0 +1,14 @@
+<header>
+    <div class="component-header">
+      <h1>
+        {{ component.display_name }}
+        <small class="import-hint">→ <code>{{ component.class_name }}</code></small>
+      </h1>
+    </div>
+  </header>
+  
+  {% include "patternlib_browser/fragments/tags.html" with tags=component.tags %}
+  {% if component.exists %}
+    {% include "patternlib_browser/fragments/file_status.html" with comp=component %}
+  {% endif %}
+  

@@ -1,0 +1,7 @@
+<form hx-get="." hx-target="#results" hx-push-url="true">
+    <input type="text" name="q" value="{{ q }}" placeholder="Søg komponenter..." />
+    <button type="submit">Søg</button>
+    {% if q %}
+      <a href="." class="clear-search">❌ Ryd søgning</a>
+    {% endif %}
+</form>

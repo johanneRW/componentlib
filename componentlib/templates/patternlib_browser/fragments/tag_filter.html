@@ -1,0 +1,17 @@
+{% load custom_filters %}
+<section aria-label="Filtrér efter tags">
+    <h2>🏷 Filtrér efter tags:</h2>
+    <nav class="tag-nav">
+        {% for t in all_tags %}
+            {% with t_lower=t|lower %}
+                {% if t_lower in selected_tags %}
+                    <a href="?tags={{ selected_tags|exclude:t_lower|join:',' }}" class="tag-link selected">✔ {{ t }}</a>
+                {% else %}
+                    {% with tag_string=selected_tags|join:',' %}
+                        <a href="?tags={% if tag_string %}{{ tag_string }},{% endif %}{{ t }}" class="tag-link">{{ t }}</a>
+                    {% endwith %}
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+    </nav>
+</section>

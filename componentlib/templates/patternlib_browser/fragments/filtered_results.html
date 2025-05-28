@@ -1,0 +1,15 @@
+{% if q or selected_tags or selected_tech %}
+<h2>Filtrerede resultater</h2>
+
+{% if q and only_fuzzy %}
+    <p><em>Ingen eksakte matches – her er forslag baseret på fuzzy søgning:</em></p>
+{% endif %}
+
+{% if matches %}
+    {% for comp in matches %}
+        {% include "patternlib_browser/fragments/component_card.html" with comp=comp %}
+    {% endfor %}
+{% else %}
+    <p>Ingen komponenter fundet.</p>
+{% endif %}
+{% endif %}

@@ -1,0 +1,20 @@
+<section>
+    <h2>Eksempel</h2>
+    <div class="component-preview">
+      {% if component.rendered %}
+        {{ component.rendered|safe }}
+      {% else %}
+        <em>Ingen template tilgængelig for denne komponent.</em>
+      {% endif %}
+    </div>
+  
+    {% if component.example_data_block %}
+      <hr>
+      <section>
+        <h3>Eksempeldata</h3>
+        <pre><code>{{ component.example_data_block }}</code></pre>
+        <button class="copy-btn" onclick="copySpecificCode('example-data-{{ component.key }}')">📋 Kopier eksempeldata</button>
+      </section>
+    {% endif %}
+  </section>
+  

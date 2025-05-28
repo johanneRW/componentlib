@@ -1,33 +1,13 @@
-<form hx-get="." hx-target="#results" hx-push-url="true">
-    <input type="text" name="q" value="{{ q }}" placeholder="Søg komponenter..." />
-    <button type="submit">Søg</button>
-    {% if q %}
-      <a href="." class="clear-search">❌ Ryd søgning</a>
-    {% endif %}
-  </form>
-  
-  {% if q %}
-    <h2>Søgeresultater</h2>
-  
-    {% if only_fuzzy %}
-      <p><em>Ingen eksakte matches – her er forslag baseret på fuzzy søgning:</em></p>
-    {% endif %}
-  
-    {% if matches %}
-      {% for comp in matches %}
-        {% include "patternlib_browser/fragments/component_card.html" with comp=comp %}
-      {% endfor %}
-    {% else %}
-      <p>Ingen komponenter fundet.</p>
-    {% endif %}
-  {% else %}
-    <h2>Alfabetisk oversigt over tilgængelige komponenter</h2>
-    <ul class="component-list">
-      {% for comp in components %}
-        <li class="component-list-item">
-          {% include "patternlib_browser/fragments/component_card.html" with comp=comp %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-  
+{% load custom_filters %}
+
+
+{% include "patternlib_browser/fragments/search_form.html" %}
+{% include "patternlib_browser/fragments/active_tags.html" %}
+{% include "patternlib_browser/fragments/tag_filter.html" %}
+{% include "patternlib_browser/fragments/active_tech.html" %}
+{% include "patternlib_browser/fragments/tech_filter.html" %}
+
+<hr>
+
+{% include "patternlib_browser/fragments/filtered_results.html" %}
+{% include "patternlib_browser/fragments/alphabetical_list.html" %}

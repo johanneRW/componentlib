@@ -1,0 +1,10 @@
+{% if selected_tags %}
+<section aria-label="Aktive tags">
+    <p><strong>Aktive tags:</strong>
+        {% for tag in selected_tags %}
+            <span class="active-tag">{{ tag }}</span>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        [<a href="?">Fjern alle</a>]
+    </p>
+</section>
+{% endif %}
