@@ -1,0 +1,37 @@
+@import '_variables.css';
+
+.component-card {
+    border: 1px solid var(--color-border);
+    margin: var(--margin-lg) 0;
+    padding: var(--padding-lg);
+    border-radius: var(--border-radius-xl);
+    cursor: pointer;
+    transition: var(--transform-transition);
+}
+
+.component-card:hover {
+    transform: var(--transform-scale);
+    box-shadow: var(--box-shadow);
+}
+
+.component-card h2 {
+    margin-top: 0;
+}
+
+.component-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.component-card * {
+    pointer-events: none;
+}
+
+.component-card-link * {
+    pointer-events: auto;
+}

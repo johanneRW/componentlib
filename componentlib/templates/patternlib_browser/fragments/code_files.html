@@ -1,8 +1,8 @@
 <section>
     <h2>Kodefiler</h2>
-    {% for filename in code_files %}
-      <div class="code-file">
-        <div>
+    <div class="button-container">
+      {% for filename in code_files %}
+        <div class="code-file">
           <button
             onclick="toggleCode(this, '{{ filename }}')"
             data-loaded="false"
@@ -14,8 +14,10 @@
             {% endif %}
           </button>
         </div>
-        <div id="code-block-{{ filename }}" style="display: none;"></div>
-      </div>
+      {% endfor %}
+    </div>
+    {% for filename in code_files %}
+      <div id="code-block-{{ filename }}" style="display: none;"></div>
     {% endfor %}
   </section>
   

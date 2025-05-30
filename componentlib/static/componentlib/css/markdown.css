@@ -1,0 +1,42 @@
+@import '_variables.css';
+
+.markdown-body {
+    font-family: system-ui, sans-serif;
+    line-height: var(--line-height);
+    max-width: var(--max-width);
+    margin: var(--margin-lg) auto;
+    padding: var(--padding-lg);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-markdown);
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+    margin-top: var(--margin-xl);
+    border-bottom: 1px solid var(--color-heading-border);
+    padding-bottom: var(--padding-sm);
+}
+
+.markdown-body pre {
+    background: var(--color-markdown-background);
+    padding: var(--padding-xl);
+    overflow-x: auto;
+    border-radius: var(--border-radius);
+}
+
+.markdown-body code {
+    background: var(--color-markdown-background);
+    padding: var(--padding-sm) var(--padding-md);
+    border-radius: var(--border-radius);
+}
+
+.markdown-body ul {
+    list-style: disc;
+    margin-left: var(--margin-xl);
+}
+
+.markdown-body li {
+    margin-bottom: var(--margin-sm);
+}

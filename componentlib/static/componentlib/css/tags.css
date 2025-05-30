@@ -1,0 +1,21 @@
+@import '_variables.css';
+
+.tag-link {
+    background: var(--color-tag-background);
+    padding: var(--padding-sm) var(--padding-md);
+    margin: var(--margin-sm);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: var(--color-text-dark);
+    display: inline-block;
+}
+
+.component-header .tags {
+    display: flex;
+    gap: var(--gap-sm);
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+}

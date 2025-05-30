@@ -1,0 +1,66 @@
+@import '_variables.css';
+@import 'buttons.css';
+@import 'cards.css';
+@import 'icons.css';
+@import 'markdown.css';
+@import 'tags.css';
+
+hr {
+    color: var(--color-hr);
+}
+
+.component-header {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    flex-wrap: wrap;
+}
+
+.nav-placeholder {
+    display: inline-block;
+    width: var(--nav-placeholder-width);
+}
+
+.example-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.component-preview, .example-data {
+    flex: 1;
+    padding: var(--padding-md);
+}
+
+.example-data {
+    border-left: 1px solid var(--color-border);
+    margin-left: var(--margin-md);
+}
+
+.import-block {
+    margin-bottom: var(--import-block-margin);
+}
+
+.import-block pre {
+    flex: 1;
+    margin: 0;
+}
+
+.code-and-button {
+    display: flex;
+    align-items: center;
+}
+
+.file-status-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--gap-lg);
+}
+
+.file-status {
+    flex: 1;
+}
+
+.component-name {
+    margin-right: var(--margin-md);
+}

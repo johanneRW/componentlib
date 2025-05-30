@@ -1,18 +1,23 @@
 <header>
     <div class="component-header">
-      <h1>
+      <h1 class="component-name">
         {{ component.display_name }}
         <small class="import-hint">→ <code>{{ component.class_name }}</code></small>
       </h1>
+      <div class="tags-container">
+        {% include "patternlib_browser/fragments/tags_links.html" with tags=component.tags %}
+      </div>
     </div>
   </header>
   
-  {% include "patternlib_browser/fragments/tags_links.html" with tags=component.tags %}
-  
   {% if component.exists %}
-    <div class="file-status">
-      {% include "patternlib_browser/fragments/component_tech.html" with comp=component %}
-      {% include "patternlib_browser/fragments/component_docs.html" with comp=component %}
+    <div class="file-status-container">
+      <div class="file-status">
+        {% include "patternlib_browser/fragments/component_tech.html" with comp=component %}
+      </div>
+      <div class="file-status">
+        {% include "patternlib_browser/fragments/component_docs.html" with comp=component %}
+      </div>
     </div>
   {% endif %}
   

@@ -13,9 +13,18 @@ function copyToClipboard(btn) {
     });
   }
   
-  async function toggleCode(button, filename) {
+  let currentlyOpenButton = null;
+
+async function toggleCode(button, filename) {
     const target = document.getElementById('code-block-' + filename);
     const loaded = button.getAttribute('data-loaded') === 'true';
+
+    // Hvis der er en anden åben knap, luk den først
+    if (currentlyOpenButton && currentlyOpenButton !== button) {
+        const currentTarget = document.getElementById('code-block-' + currentlyOpenButton.getAttribute('data-filename'));
+        currentTarget.style.display = 'none';
+        currentlyOpenButton.textContent = currentlyOpenButton.textContent.replace('Skjul', 'Vis');
+    }
 
     if (!loaded) {
         const url = button.getAttribute('data-url');
@@ -26,7 +35,6 @@ function copyToClipboard(btn) {
             if (filename === 'readme') {
                 // Render markdown til HTML
                 target.innerHTML = `<div class="markdown-body">${marked.parse(rawContent)}</div>`;
-
             } else {
                 // Brug som raw HTML (serveren leverer <pre><code>)
                 target.innerHTML = rawContent;
@@ -35,19 +43,30 @@ function copyToClipboard(btn) {
             target.style.display = 'block';
             button.textContent = button.textContent.replace('Vis', 'Skjul');
             button.setAttribute('data-loaded', 'true');
+            button.setAttribute('data-filename', filename);
+            currentlyOpenButton = button;
         } catch (err) {
             target.innerHTML = '<p>Fejl ved hentning af kode.</p>';
             target.style.display = 'block';
+            currentlyOpenButton = button;
         }
     } else {
         const isVisible = target.style.display !== 'none';
-        target.style.display = isVisible ? 'none' : 'block';
-        button.textContent = button.textContent.replace(isVisible ? 'Skjul' : 'Vis', isVisible ? 'Vis' : 'Skjul');
+        if (isVisible) {
+            target.style.display = 'none';
+            button.textContent = button.textContent.replace('Skjul', 'Vis');
+            currentlyOpenButton = null;
+        } else {
+            target.style.display = 'block';
+            button.textContent = button.textContent.replace('Vis', 'Skjul');
+            currentlyOpenButton = button;
+        }
     }
 }
 
+
   
-  async function toggleImport(button, key) {
+/*   async function toggleImport(button, key) {
     const block = document.getElementById('import-' + key);
     const loaded = button.getAttribute('data-loaded') === 'true';
   
@@ -75,23 +94,4 @@ function copyToClipboard(btn) {
     }
   }
   
- /*  document.addEventListener('DOMContentLoaded', function() {
-    var componentCards = document.querySelectorAll('.component-card');
-  
-    componentCards.forEach(function(card) {
-      card.addEventListener('click', function(event) {
-        // Forhindr standard klikhændelse
-        event.preventDefault();
-  
-        // Find det omgivende link
-        var link = card.closest('.component-card-link');
-  
-        // Få href-attributten fra linket
-        var href = link.getAttribute('href');
-  
-        // Naviger til href-attributten
-        window.location.href = href;
-      });
-    });
-  }); */
-  
+ */

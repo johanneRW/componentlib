@@ -1,12 +1,12 @@
 {% if previous or next %}
   <nav class="component-nav">
     {% if previous %}
-      <a href="{% url 'component_detail' key=previous.key %}">← {{ previous.name }}</a>
+      <a href="{% url 'component_detail' key=previous.key %}" class="nav-button">← {{ previous.name }}</a>
     {% else %}
-      <span></span>
+      <span class="nav-placeholder"></span>
     {% endif %}
     {% if next %}
-      <a href="{% url 'component_detail' key=next.key %}">{{ next.name }} →</a>
+      <a href="{% url 'component_detail' key=next.key %}" class="nav-button">{{ next.name }} →</a>
     {% endif %}
   </nav>
 {% endif %}

@@ -1,0 +1,85 @@
+@import '_variables.css';
+
+.nav-button, .back-button {
+    display: inline-block;
+    padding: var(--padding-md) var(--padding-lg);
+    margin: var(--margin-sm);
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-size: var(--font-size-md);
+    transition: var(--transition);
+}
+
+.nav-button:hover, .back-button:hover {
+    background-color: var(--color-nav-button-hover);
+}
+
+button {
+    background-color: var(--color-secondary);
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--padding-md) var(--padding-lg);
+    cursor: pointer;
+    font-size: var(--font-size-md);
+    transition: var(--transition);
+}
+
+button:hover {
+    background-color: var(--color-button-hover);
+}
+
+.copy-btn {
+    background-color: var(--color-copy-btn);
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    padding: var(--padding-md);
+    cursor: pointer;
+    font-size: var(--font-size-md);
+    transition: var(--transition);
+    margin-top: var(--margin-sm);
+}
+
+.copy-btn:hover {
+    background-color: var(--color-button-hover);
+}
+
+.button-container {
+    display: flex;
+    width: 100%;
+}
+
+.code-file {
+    flex: 1;
+    margin: 0 var(--margin-sm);
+}
+
+.code-file:first-child {
+    margin-left: 0;
+}
+
+.code-file:last-child {
+    margin-right: 0;
+}
+
+.code-file button {
+    width: 100%;
+    background-color: var(--color-code-file);
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    padding: var(--padding-md);
+    cursor: pointer;
+    font-size: var(--font-size-md);
+    transition: var(--transition);
+}
+
+.code-file button:hover {
+    background-color: var(--color-button-hover);
+}
+

@@ -1,0 +1,23 @@
+@import '_variables.css';
+
+.file-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    vertical-align: middle;
+    margin-right: var(--icon-margin);
+}
+
+.missing {
+    opacity: var(--opacity-missing);
+}
+
+.missing::after {
+    content: "";
+}
+
+.copy-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    vertical-align: middle;
+    margin-right: var(--icon-margin);
+}
