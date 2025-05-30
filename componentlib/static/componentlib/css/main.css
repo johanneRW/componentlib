@@ -5,14 +5,22 @@
 @import 'markdown.css';
 @import 'tags.css';
 
+body {
+    margin-left: var(--margin-xl);
+    margin-right: var(--margin-xl);
+}
+
 hr {
     color: var(--color-hr);
+}
+
+#results {
+    margin-top: 3.4375rem;
 }
 
 .component-header {
     display: flex;
     align-items: center;
-    gap: var(--gap-md);
     flex-wrap: wrap;
 }
 
@@ -34,6 +42,7 @@ hr {
 .example-data {
     border-left: 1px solid var(--color-border);
     margin-left: var(--margin-md);
+    padding-left: var(--padding-lg);
 }
 
 .import-block {
@@ -48,6 +57,7 @@ hr {
 .code-and-button {
     display: flex;
     align-items: center;
+    padding-bottom: var(--import-block-margin);
 }
 
 .file-status-container {
@@ -63,4 +73,57 @@ hr {
 
 .component-name {
     margin-right: var(--margin-md);
+}
+
+.search-and-filter-container {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    margin-bottom: var(--margin-lg);
+}
+
+.search-form, .filter-container {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    margin: 0;
+    padding: 0;
+}
+
+.search-input {
+    padding: var(--search-input-padding);
+    border-radius: var(--border-radius);
+    border: var(--dropdown-select-border);
+    font-size: var(--search-input-font-size);
+}
+
+.search-button {
+    padding: var(--search-button-padding);
+    background-color: var(--search-button-bg);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--search-input-font-size);
+}
+
+.filter-label {
+    font-size: var(--filter-label-font-size);
+    color: var(--color-text-dark);
+    white-space: nowrap;
+}
+
+.dropdown-select {
+    padding: var(--dropdown-select-padding);
+    border-radius: var(--dropdown-select-border-radius);
+    border: var(--dropdown-select-border);
+    background-color: var(--dropdown-select-bg);
+    color: var(--color-text-dark);
+    cursor: pointer;
+    font-size: var(--search-input-font-size);
+}
+
+.dropdown-select:focus {
+    outline: none;
+    border-color: var(--dropdown-select-focus-border-color);
 }

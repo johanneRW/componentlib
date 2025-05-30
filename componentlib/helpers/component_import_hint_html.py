@@ -67,6 +67,7 @@ def component_import_hint_html(key):
     </button>
   </div>
 </div>
+
 """
 
     return {

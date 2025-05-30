@@ -1,11 +1,12 @@
 {% load custom_filters %}
 
+<div class="search-and-filter-container">
+    {% include "patternlib_browser/fragments/search_form.html" %}
+    {% include "patternlib_browser/fragments/tech_dropdown.html" %}
+</div>
 
-{% include "patternlib_browser/fragments/search_form.html" %}
 {% include "patternlib_browser/fragments/active_tags.html" %}
 {% include "patternlib_browser/fragments/tag_filter.html" %}
-{% include "patternlib_browser/fragments/active_tech.html" %}
-{% include "patternlib_browser/fragments/tech_filter.html" %}
 
 <hr>
 

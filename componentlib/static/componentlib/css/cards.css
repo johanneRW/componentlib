@@ -2,7 +2,6 @@
 
 .component-card {
     border: 1px solid var(--color-border);
-    margin: var(--margin-lg) 0;
     padding: var(--padding-lg);
     border-radius: var(--border-radius-xl);
     cursor: pointer;
@@ -16,6 +15,8 @@
 
 .component-card h2 {
     margin-top: 0;
+    margin-bottom: 0.25rem;
+    font-size: var(--font-size-xl);
 }
 
 .component-card-link {
@@ -26,6 +27,7 @@
     margin: 0;
     position: relative;
     z-index: 1;
+    padding-top: 0.3125rem;
 }
 
 .component-card * {
@@ -34,4 +36,44 @@
 
 .component-card-link * {
     pointer-events: auto;
+}
+
+.component-list-item {
+    background: var(--color-component-list-item);
+    border-radius: var(--border-radius);
+}
+
+.component-card p {
+    font-size: var(--font-size-md);
+}
+
+.component-title {
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+    margin-bottom: var(--margin-sm);
+}
+
+.component-grid {
+    list-style-type: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.component-list-item {
+    grid-column: 1;
+}
+
+.component-card .import-hint,
+.component-card .tag-link {
+    font-size: var(--font-size-sm);
+}
+
+.component-card .file-status {
+    font-size: var(--font-size-md);
+}
+
+.component-card p,
+.component-card div {
+    font-size: var(--font-size-md);
 }

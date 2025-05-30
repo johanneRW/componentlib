@@ -1,17 +1,30 @@
-function copyToClipboard(btn) {
-    const code = btn.closest(".import-block").querySelector("code");
-    if (!code) return;
-  
-    navigator.clipboard.writeText(code.innerText).then(() => {
-      const original = btn.innerText;
-      btn.innerText = "✅ Kopieret!";
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+      const originalText = btn.innerHTML;
+      btn.innerHTML = "✅ Kopieret!";
       btn.disabled = true;
+
       setTimeout(() => {
-        btn.innerText = original;
-        btn.disabled = false;
-      }, 1500);
-    });
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+      }, 1500); // Beskeden forsvinder efter 1.5 sekunder
+  }).catch(err => {
+      console.error('Kunne ikke kopiere tekst: ', err);
+  });
+}
+
+function copySpecificCode(codeId) {
+  const codeElement = document.getElementById(codeId);
+  if (!codeElement) {
+      console.error('Kunne ikke finde elementet med id: ', codeId);
+      return;
   }
+
+  const btn = event.target;
+  const textToCopy = codeElement.innerText;
+  copyToClipboard(textToCopy, btn);
+}
+
   
   let currentlyOpenButton = null;
 
@@ -65,33 +78,18 @@ async function toggleCode(button, filename) {
 }
 
 
-  
-/*   async function toggleImport(button, key) {
-    const block = document.getElementById('import-' + key);
-    const loaded = button.getAttribute('data-loaded') === 'true';
-  
-    if (!loaded) {
-      const url = button.getAttribute('data-url');
-      try {
-        button.textContent = "⏳ Henter importvejledning...";
-        const res = await fetch(url);
-        const html = await res.text();
-        block.innerHTML = html;
-        block.style.display = 'block';
-        button.textContent = "🔽 Skjul importvejledning";
-        button.setAttribute('data-loaded', 'true');
-      } catch (err) {
-        block.innerHTML = "<p>Der opstod en fejl.</p>";
-        block.style.display = 'block';
-        button.textContent = "📦 Prøv igen";
-      }
-    } else {
-      const isVisible = block.style.display !== 'none';
-      block.style.display = isVisible ? 'none' : 'block';
-      button.textContent = isVisible 
-        ? "📦 Vis hvordan du importerer" 
-        : "🔽 Skjul importvejledning";
+document.addEventListener("DOMContentLoaded", function() {
+  const grid = document.querySelector('.component-grid');
+  if (grid) {
+    const items = grid.querySelectorAll('.component-list-item');
+
+    if (items.length > 10) {
+      // Flyt kortene til den anden kolonne, hvis der er mere end 10 kort
+      items.forEach((item, index) => {
+        if (index >= 10) {
+          item.style.gridColumn = '2';
+        }
+      });
     }
   }
-  
- */
+});

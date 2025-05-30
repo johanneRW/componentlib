@@ -1,21 +1,20 @@
 <section class="example-container">
-    <div class="component-preview">
+  <div class="component-preview">
       <h2>Eksempel</h2>
       {% if component.rendered %}
-        {{ component.rendered|safe }}
+          {{ component.rendered|safe }}
       {% else %}
-        <em>Ingen template tilgængelig for denne komponent.</em>
+          <em>Ingen template tilgængelig for denne komponent.</em>
       {% endif %}
-    </div>
-  
-    {% if component.example_data_block %}
+  </div>
+
+  {% if component.example_data_block %}
       <div class="example-data">
-        <h3>Eksempeldata</h3>
-        <pre><code>{{ component.example_data_block }}</code></pre>
-        <button class="copy-btn" onclick="copySpecificCode('example-data-{{ component.key }}')">
-          <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier eksempeldata
-        </button>
+          <h3>Eksempeldata</h3>
+          <pre><code id="example-data-{{ component.key }}">{{ component.example_data_block }}</code></pre>
+          <button class="copy-btn" onclick="copySpecificCode('example-data-{{ component.key }}')">
+              <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier eksempeldata
+          </button>
       </div>
-    {% endif %}
-  </section>
-  
+  {% endif %}
+</section>

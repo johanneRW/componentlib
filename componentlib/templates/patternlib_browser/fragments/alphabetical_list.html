@@ -1,6 +1,6 @@
 {% if not q and not selected_tags and not selected_tech %}
 <h2>Alfabetisk oversigt over tilgængelige komponenter</h2>
-<ul class="component-list">
+<ul class="component-grid">
     {% for comp in components %}
         <li class="component-list-item">
             {% include "patternlib_browser/fragments/component_card.html" with comp=comp %}
