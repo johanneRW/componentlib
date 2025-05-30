@@ -1,9 +1,14 @@
-<article class="component-card" id="comp-{{ comp.key }}">
-  <div class="component-header">
-    <h2>{{ comp.display_name }} <small class="import-hint">→ <code>{{ comp.class_name }}</code></small></h2>
-  </div>
-  {% include "patternlib_browser/fragments/tags.html" with tags=comp.tags %}
-  {% include "patternlib_browser/fragments/file_status.html" with comp=comp %}
+<a href="{% url 'component_detail' key=comp.key %}" class="component-card-link">
+  <article class="component-card" id="comp-{{ comp.key }}">
+    <div class="component-header">
+      <h2>{{ comp.display_name }} <small class="import-hint">→ <code>{{ comp.class_name }}</code></small></h2>
+    </div>
+    {% include "patternlib_browser/fragments/tags.html" with tags=comp.tags %}
+    {% load custom_filters %}
 
-  <a href="{% url 'component_detail' key=comp.key %}" class="view-detail-link">🔍 Vis komponent</a>
-</article>
+<div class="file-status">
+  {% include "patternlib_browser/fragments/component_tech.html" with comp=comp %}
+
+</div>
+  </article>
+</a>

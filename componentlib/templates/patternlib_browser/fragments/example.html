@@ -7,14 +7,15 @@
         <em>Ingen template tilgængelig for denne komponent.</em>
       {% endif %}
     </div>
-  
+
     {% if component.example_data_block %}
       <hr>
       <section>
         <h3>Eksempeldata</h3>
         <pre><code>{{ component.example_data_block }}</code></pre>
-        <button class="copy-btn" onclick="copySpecificCode('example-data-{{ component.key }}')">📋 Kopier eksempeldata</button>
+        <button class="copy-btn" onclick="copySpecificCode('example-data-{{ component.key }}')">
+          <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier eksempeldata
+        </button>
       </section>
     {% endif %}
-  </section>
-  
+</section>

@@ -1,0 +1,10 @@
+{% comment %}
+Smart tag-link: virker både på index og detail-sider
+Forudsætter at 'component_browser' URL'en eksisterer
+{% endcomment %}
+
+{% for tag in tags %}
+  <a href="{% url 'component_browser' %}?tags={{ tag|urlencode }}" class="tag-link">
+    {{ tag }}
+  </a>
+{% endfor %}

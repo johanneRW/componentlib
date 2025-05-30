@@ -1,0 +1,25 @@
+{% load custom_filters %}
+
+<div class="component-tech">
+  <span>Teknologier:</span>
+  {% if comp.exists.component_py %}
+    <span>
+      <img class="file-icon" src="/static/icons/django.svg" alt="Django">
+      Django
+    </span>
+  {% endif %}
+
+  {% if comp.capabilities.has_simple_html %}
+    <span>
+      <img class="file-icon" src="/static/icons/template.svg" alt="HTML">
+      HTML
+    </span>
+  {% endif %}
+
+  {% if comp.capabilities.has_htmx %}
+    <span>
+      <img class="file-icon" src="/static/icons/htmx.svg" alt="HTMX">
+      HTMX
+    </span>
+  {% endif %}
+</div>

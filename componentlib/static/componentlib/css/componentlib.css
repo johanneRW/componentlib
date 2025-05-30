@@ -50,6 +50,14 @@
   content: "";
 }
 
+.copy-icon{
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+
+}
+
 .copy-btn {
   float: right;
   margin-top: -2em;
@@ -106,4 +114,46 @@
 .markdown-body li {
   margin-bottom: 0.3em;
 }
+
+.component-card-link {
+  text-decoration: none; /* Fjern understregning */
+  color: inherit; /* Arv tekstfarve */
+  display: block; /* Gør linket til en blok for at fylde hele kortet */
+  padding: 0; /* Fjern padding for at sikre, at hele kortet er klikbart */
+  margin: 0; /* Fjern margin for at sikre, at hele kortet er klikbart */
+  position: relative; /* Tilføj position for at sikre, at linket dækker hele kortet */
+  z-index: 1; /* Tilføj z-index for at sikre, at linket er over andre elementer */
+}
+
+.component-card {
+  cursor: pointer; /* Ændr markøren til en hånd, når den svæver over kortet */
+  transition: transform 0.2s; /* Tilføj en overgangseffekt */
+  padding: 1rem; /* Tilføj padding til kortet for at give det noget plads */
+  border: 1px solid #ddd; /* Tilføj en grænse for at definere kortet */
+  border-radius: 8px; /* Tilføj afrundede hjørner */
+  position: relative; /* Tilføj position for at sikre, at kortet er under linket */
+  z-index: 0; /* Tilføj z-index for at sikre, at kortet er under linket */
+}
+
+.component-card * {
+  pointer-events: none; /* Deaktiver pointer-events for alle indre elementer */
+}
+
+.component-card-link * {
+  pointer-events: auto; /* Aktiver pointer-events for alle elementer inde i linket */
+}
+
+.component-card:hover {
+  transform: scale(1.02); /* Forstør kortet lidt, når der svæves over det */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Tilføj en skyggeeffekt, når der svæves over kortet */
+}
+
+
+.component-card .non-clickable {
+  pointer-events: none;
+  cursor: default;
+}
+
+
+
 

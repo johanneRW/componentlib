@@ -24,12 +24,13 @@ function copyToClipboard(btn) {
             const rawContent = await res.text();
 
             if (filename === 'readme') {
-              // Render markdown med GitHub-styling
-              target.innerHTML = `<div class="markdown-body">${marked.parse(rawContent)}</div>`;
-          } else {
-              target.innerHTML = rawContent;
-          }
-          
+                // Render markdown til HTML
+                target.innerHTML = `<div class="markdown-body">${marked.parse(rawContent)}</div>`;
+
+            } else {
+                // Brug som raw HTML (serveren leverer <pre><code>)
+                target.innerHTML = rawContent;
+            }
 
             target.style.display = 'block';
             button.textContent = button.textContent.replace('Vis', 'Skjul');
@@ -73,4 +74,24 @@ function copyToClipboard(btn) {
         : "🔽 Skjul importvejledning";
     }
   }
+  
+ /*  document.addEventListener('DOMContentLoaded', function() {
+    var componentCards = document.querySelectorAll('.component-card');
+  
+    componentCards.forEach(function(card) {
+      card.addEventListener('click', function(event) {
+        // Forhindr standard klikhændelse
+        event.preventDefault();
+  
+        // Find det omgivende link
+        var link = card.closest('.component-card-link');
+  
+        // Få href-attributten fra linket
+        var href = link.getAttribute('href');
+  
+        // Naviger til href-attributten
+        window.location.href = href;
+      });
+    });
+  }); */
   

@@ -42,26 +42,32 @@ def component_import_hint_html(key):
     template_kwargs_str = " ".join(template_kwargs_list)
     example_block_str = "\n\n".join(example_blocks) if example_blocks else ""
 
+
     # Byg HTML-sektioner
     html = f"""
-<h3>Django komponent (Python)</h3>
-<div class="import-block">
-  <pre><code id="django-init-{key}">from componentlib.components.{key}.component import {class_name}Component
+    <h3>Django komponent (Python)</h3>
+    <div class="import-block">
+      <pre><code id="django-init-{key}">from componentlib.components.{key}.component import {class_name}Component
 
-# Initiering:
-{class_name}Component({python_kwargs_str})
-</code></pre>
-  <button class="copy-btn" onclick="copySpecificCode('django-init-{key}')">📋 Kopier Django initiering</button>
-</div>
+    # Initiering:
+    {class_name}Component({python_kwargs_str})
+    </code></pre>
+      <button class="copy-btn" onclick="copySpecificCode('django-init-{key}')">
+        <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier Django initiering
+      </button>
+    </div>
 
-<h3>Django komponent (template)</h3>
-<div class="import-block">
-  <pre><code id="django-template-{key}">{{% include "components/{key}/template.html" with {template_kwargs_str} %}}</code></pre>
-  <button class="copy-btn" onclick="copySpecificCode('django-template-{key}')">📋 Kopier Django template</button>
-</div>
-"""
+    <h3>Django komponent (template)</h3>
+    <div class="import-block">
+      <pre><code id="django-template-{key}">{{% include "components/{key}/template.html" with {template_kwargs_str} %}}</code></pre>
+      <button class="copy-btn" onclick="copySpecificCode('django-template-{key}')">
+        <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier Django template
+      </button>
+    </div>
+    """
 
     return {
         "html": html,
         "example_block": example_block_str
     }
+

@@ -7,8 +7,12 @@
     </div>
   </header>
   
-  {% include "patternlib_browser/fragments/tags.html" with tags=component.tags %}
+  {% include "patternlib_browser/fragments/tags_links.html" with tags=component.tags %}
+  
   {% if component.exists %}
-    {% include "patternlib_browser/fragments/file_status.html" with comp=component %}
+    <div class="file-status">
+      {% include "patternlib_browser/fragments/component_tech.html" with comp=component %}
+      {% include "patternlib_browser/fragments/component_docs.html" with comp=component %}
+    </div>
   {% endif %}
   
