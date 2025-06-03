@@ -2,130 +2,40 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 from pathlib import Path
 from django.utils.html import escape
-from .helpers.registry import load_all_components_metadata
-from .helpers.preview import render_component_preview
-from rapidfuzz import fuzz
+from componentlib.helpers.registry import load_all_components_metadata
+from componentlib.helpers.preview import render_component_preview
+from componentlib.helpers.filters import filter_by_tech, filter_by_tags, search_and_sort_components
+from componentlib.helpers.component_utils import load_and_render_components, collect_tags_and_tech, get_code_files, read_files
 from componentlib.helpers.component_import_hint_html import component_import_hint_html
 
 def redirect_to_components(request):
     return redirect("component_browser")
 
-def load_and_render_components():
-    all_components = load_all_components_metadata()
-    for c in all_components:
-        c["rendered"] = render_component_preview(c["key"])
-    return all_components
-
-def filter_by_tech(components, selected_tech):
-    if not selected_tech:
-        return components
-
-    def component_matches_tech(comp):
-        matches = []
-        if "django" in selected_tech:
-            matches.append(comp["exists"].get("component_py"))
-        if "html" in selected_tech:
-            matches.append(comp["capabilities"].get("has_simple_html"))
-        if "htmx" in selected_tech:
-            matches.append(comp["capabilities"].get("has_htmx"))
-        return all(matches)
-
-    return [c for c in components if component_matches_tech(c)]
-
-def filter_by_tags(components, selected_tags):
-    if not selected_tags:
-        return components
-
-    filtered_components = []
-    for c in components:
-        tags = [t.lower() for t in c.get("tags", []) if isinstance(t, str)]
-        if all(tag in tags for tag in selected_tags):
-            filtered_components.append(c)
-
-    return filtered_components
-
-def search_and_sort_components(components, q):
-    if not q:
-        return components
-
-    matched_components = []
-    for c in components:
-        haystack = " ".join([
-            c.get("name", ""),
-            c.get("description", ""),
-            " ".join([t for t in c.get("tags", []) if isinstance(t, str)]),
-        ]).lower()
-
-        if q in haystack:
-            c["match_type"] = "substring"
-            matched_components.append(c)
-        else:
-            score = fuzz.partial_ratio(q, haystack)
-            if score > 60:
-                c["fuzzy_score"] = score
-                c["match_type"] = "fuzzy"
-                matched_components.append(c)
-
-    matched_components.sort(key=lambda x: x.get("fuzzy_score", 0), reverse=True)
-    return matched_components
-
-def collect_tags_and_tech(components):
-    tag_set = set()
-    tech_set = set()
-
-    for c in components:
-        tag_set.update(t.lower() for t in c.get("tags", []) if isinstance(t, str))
-        if c.get("exists", {}).get("component_py"):
-            tech_set.add("django")
-        if c.get("capabilities", {}).get("has_simple_html"):
-            tech_set.add("html")
-        if c.get("capabilities", {}).get("has_htmx"):
-            tech_set.add("htmx")
-
-    return sorted(tag_set), sorted(tech_set)
-
-def get_code_files(base_path):
-    code_files = []
-    for f, ext in [("template", ".html"), ("component", ".py"), ("props", ".py")]:
-        file_path = base_path / f"{f}{ext}"
-        if file_path.exists():
-            code_files.append(f)
-
-    for fname in base_path.iterdir():
-        if fname.name.lower() == "readme.md":
-            code_files.append("readme")
-            break
-
-    return code_files
-
-def read_files(base_path, file_names):
-    files = {}
-    for fname in file_names:
-        path = base_path / fname
-        if path.exists():
-            files[fname] = path.read_text(encoding="utf-8")
-    return files
 
 def component_browser(request):
+    # Get query parameters from the request
     q = request.GET.get("q", "").strip().lower()
     raw_tags = request.GET.get("tags", "")
     selected_tags = [t.strip().lower() for t in raw_tags.split(",") if t.strip()]
     raw_tech = request.GET.get("tech", "")
     selected_tech = [t.strip().lower() for t in raw_tech.split(",") if t.strip()]
 
+    # Load and render all components
     all_components = load_and_render_components()
+
+    # Apply technology filter
     tech_filtered_components = filter_by_tech(all_components, selected_tech)
+
+    # Apply tag filter
     tag_filtered_components = filter_by_tags(tech_filtered_components, selected_tags)
 
-    for comp in tag_filtered_components:
-        tags = [t.lower() for t in comp.get("tags", []) if isinstance(t, str)]
-        comp["tag_match"] = any(tag in tags for tag in selected_tags)
-
-    tag_filtered_components.sort(key=lambda c: c["name"].lower())
+    # Apply search filter on the already filtered components
     matched_components = search_and_sort_components(tag_filtered_components, q)
 
+    # Collect all tags and technologies for the UI
     all_tags, all_tech = collect_tags_and_tech(all_components)
 
+    # Prepare context for rendering
     context = {
         "components": all_components,
         "matches": matched_components,
@@ -137,10 +47,13 @@ def component_browser(request):
         "only_fuzzy": q and all(m.get("match_type") == "fuzzy" for m in matched_components),
     }
 
+    # Render the appropriate template based on the request type
     if request.headers.get("Hx-Request") == "true":
         return render(request, "patternlib_browser/results_partial.html", context)
     else:
         return render(request, "patternlib_browser/index.html", context)
+
+
 
 def component_detail(request, key):
     base_path = Path(__file__).resolve().parent / "components" / key

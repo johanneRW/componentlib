@@ -1,16 +1,15 @@
-<div class="c-dropdown">
+<div class="c-dropdown {{ attributes.class }}">
     <label>{{ label }}</label>
     <select
       name="dropdown"
       hx-get="{{ target_url }}"
       hx-target="#dropdown-result"
       hx-trigger="change"
-      class="c-dropdown__select"
+      class="c-dropdown__select {{ attributes.select_class }}"
     >
       {% for option in options %}
         <option value="{{ option }}">{{ option }}</option>
       {% endfor %}
     </select>
     <div id="dropdown-result" class="c-dropdown__result"></div>
-  </div>
-  
+</div>

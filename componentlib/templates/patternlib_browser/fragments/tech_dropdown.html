@@ -1,17 +1,21 @@
 <div class="filter-container">
     <label for="tech-dropdown" class="filter-label">Filtrér efter teknologi:</label>
     <div class="dropdown">
-        <select id="tech-dropdown" name="tech" class="dropdown-select"
-                hx-get="."
-                hx-target="#results"
-                hx-push-url="true"
-                hx-trigger="change">
-            <option value="">Alle</option>
-            {% for t in all_tech %}
-                <option value="{{ t|lower }}" {% if t|lower in selected_tech %}selected{% endif %}>
-                    {{ t|capfirst }}
-                </option>
+        <form hx-get="." hx-target="#results" hx-push-url="true" hx-trigger="change">
+            <select id="tech-dropdown" name="tech" class="dropdown-select" onchange="this.form.requestSubmit()">
+                <option value="">Alle</option>
+                {% for t in all_tech %}
+                    <option value="{{ t|lower }}" {% if t|lower in selected_tech %}selected{% endif %}>
+                        {{ t|capfirst }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Skjulte inputfelter for aktive filtre -->
+            <input type="hidden" name="q" value="{{ q }}" />
+            {% for tag in selected_tags %}
+                <input type="hidden" name="tags" value="{{ tag }}" />
             {% endfor %}
-        </select>
+        </form>
     </div>
 </div>
