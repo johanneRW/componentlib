@@ -1,4 +1,0 @@
-include README.md
-recursive-include componentlib/templates *
-recursive-include componentlib/static *
-recursive-include componentlib/components *
