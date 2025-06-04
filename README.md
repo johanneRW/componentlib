@@ -1,0 +1,1 @@
+komponetbiblotek til magenta
