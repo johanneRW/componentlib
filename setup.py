@@ -21,7 +21,11 @@ setup(
     ],
     python_requires=">=3.6",
     install_requires=[
-        "Django>=3.0",
+        "Django>=4.2",
+        "pyyaml",
+        "rapidfuzz>=3.13.0",
+        "watchdog>=6.0.0",
+        "pydantic>=2.11.4",
         # Add other dependencies here
     ],
 )
