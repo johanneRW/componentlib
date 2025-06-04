@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        'componentlib': ['components/**', 'templates/**', 'static/**'],
+        'componentlib': ['components/*', 'templates/*', 'static/*'],
     },
     description="A Django component library",
     long_description=open("README.md").read(),
