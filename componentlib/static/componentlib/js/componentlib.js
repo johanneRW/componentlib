@@ -1,3 +1,4 @@
+
 function copyToClipboard(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
       const originalText = btn.innerHTML;
@@ -13,14 +14,13 @@ function copyToClipboard(text, btn) {
   });
 }
 
-function copySpecificCode(codeId) {
+function copySpecificCode(codeId, btn) {
   const codeElement = document.getElementById(codeId);
   if (!codeElement) {
       console.error('Kunne ikke finde elementet med id: ', codeId);
       return;
   }
 
-  const btn = event.target;
   const textToCopy = codeElement.innerText;
   copyToClipboard(textToCopy, btn);
 }
@@ -79,6 +79,24 @@ async function toggleCode(button, filename) {
 
 
 document.addEventListener("DOMContentLoaded", function() {
+  document.body.addEventListener('htmx:configRequest', function(evt) {
+    const btn = evt.target;
+    const codeId = btn.getAttribute('data-code-id');
+  
+    if (codeId) {
+        evt.preventDefault(); // Forhindre den faktiske HTTP-anmodning
+        copySpecificCode(codeId, btn);
+    }
+  });
+
+     // Tilføj event listeners til alle knapper med klassen 'toggle-button'
+     document.querySelectorAll('.toggle-button').forEach(button => {
+      button.addEventListener('click', function() {
+          const filename = this.getAttribute('data-filename');
+          toggleCode(this, filename);
+      });
+  });
+
   const grid = document.querySelector('.component-grid');
   if (grid) {
     const items = grid.querySelectorAll('.component-list-item');

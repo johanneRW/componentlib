@@ -1,23 +1,22 @@
 <section>
-    <h2>Kodefiler</h2>
-    <div class="button-container">
+  <h2>Kodefiler</h2>
+  <div class="button-container">
       {% for filename in code_files %}
-        <div class="code-file">
-          <button
-            onclick="toggleCode(this, '{{ filename }}')"
-            data-loaded="false"
-            data-url="{% url 'component_code' key=component.key %}?file={{ filename }}">
-            Vis {{ filename }}
-            {% if filename == "template" %}.html
-            {% elif filename == "readme" %}.md
-            {% else %}.py
-            {% endif %}
+      <div class="code-file">
+          <button class="toggle-button"
+                  data-loaded="false"
+                  data-url="{% url 'component_code' key=component.key %}?file={{ filename }}"
+                  data-filename="{{ filename }}">
+              Vis {{ filename }}
+              {% if filename == "template" %}.html
+              {% elif filename == "readme" %}.md
+              {% else %}.py
+              {% endif %}
           </button>
-        </div>
+      </div>
       {% endfor %}
-    </div>
-    {% for filename in code_files %}
-      <div id="code-block-{{ filename }}" style="display: none;"></div>
-    {% endfor %}
-  </section>
-  
+  </div>
+  {% for filename in code_files %}
+  <div id="code-block-{{ filename }}" style="display: none;"></div>
+  {% endfor %}
+</section>

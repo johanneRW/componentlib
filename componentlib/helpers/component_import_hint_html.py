@@ -52,8 +52,11 @@ def component_import_hint_html(key):
 
 # Initiering:
 {class_name}Component({python_kwargs_str})</code></pre>
-    <button class="copy-btn" onclick="copySpecificCode('django-init-{key}')">
-      <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier Django initiering
+    <button class="copy-btn"
+            hx-get="/dummy-endpoint"
+            hx-trigger="click"
+            data-code-id="django-init-{key}">
+        <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier Django initiering
     </button>
   </div>
 </div>
@@ -62,9 +65,14 @@ def component_import_hint_html(key):
 <div class="import-block">
   <div class="code-and-button">
     <pre><code id="django-template-{key}">{{% include \"components/{key}/template.html\" with {template_kwargs_str} %}}</code></pre>
-    <button class="copy-btn" onclick="copySpecificCode('django-template-{key}')">
-      <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier Django template
+
+    <button class="copy-btn"
+            hx-get="/dummy-endpoint"
+            hx-trigger="click"
+            data-code-id="django-template-{key}">
+        <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier Django template
     </button>
+    
   </div>
 </div>
 

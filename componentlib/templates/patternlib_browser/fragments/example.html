@@ -12,9 +12,12 @@
       <div class="example-data">
           <h3>Eksempeldata</h3>
           <pre><code id="example-data-{{ component.key }}">{{ component.example_data_block }}</code></pre>
-          <button class="copy-btn" onclick="copySpecificCode('example-data-{{ component.key }}')">
-              <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier eksempeldata
-          </button>
+          <button class="copy-btn"
+                    hx-get="/dummy-endpoint"
+                    hx-trigger="click"
+                    data-code-id="example-data-{{ component.key }}">
+                <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier eksempeldata
+            </button>  
       </div>
   {% endif %}
 </section>

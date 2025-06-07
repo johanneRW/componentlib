@@ -1,8 +1,9 @@
 <div class="filter-container">
     <label for="tech-dropdown" class="filter-label">Filtrér efter teknologi:</label>
     <div class="dropdown">
-        <form hx-get="." hx-target="#results" hx-push-url="true" hx-trigger="change">
-            <select id="tech-dropdown" name="tech" class="dropdown-select" onchange="this.form.requestSubmit()">
+        <form hx-get="." hx-target="#results" hx-push-url="true">
+            <select id="tech-dropdown" name="tech" class="dropdown-select"
+                    hx-trigger="change" hx-get="." hx-target="#results" hx-push-url="true">
                 <option value="">Alle</option>
                 {% for t in all_tech %}
                     <option value="{{ t|lower }}" {% if t|lower in selected_tech %}selected{% endif %}>
