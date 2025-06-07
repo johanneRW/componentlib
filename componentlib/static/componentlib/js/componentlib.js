@@ -1,3 +1,4 @@
+htmx.config.allowEval = false;
 
 function copyToClipboard(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
