@@ -3,11 +3,11 @@
     <div class="component-header">
       <h2>{{ comp.display_name }} <small class="import-hint">→ <code>{{ comp.class_name }}</code></small></h2>
     </div>
-    {% include "patternlib_browser/fragments/tags.html" with tags=comp.tags %}
+    {% include "component_browser/fragments/tags.html" with tags=comp.tags %}
     {% load custom_filters %}
 
 <div class="file-status">
-  {% include "patternlib_browser/fragments/component_tech.html" with comp=comp %}
+  {% include "component_browser/fragments/component_tech.html" with comp=comp %}
 
 </div>
   </article>

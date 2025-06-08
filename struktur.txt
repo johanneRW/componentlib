@@ -75,7 +75,7 @@
 │   │   └── __init__.py
 │   ├── templates
 │   │   ├── __init__.py
-│   │   └── patternlib_browser
+│   │   └── component_browser
 │   │       ├── component_detail.html
 │   │       ├── fragments
 │   │       │   ├── active_tags.html
@@ -112,7 +112,7 @@
 │   ├── SOURCES.txt
 │   └── top_level.txt
 ├── db.sqlite3
-├── demo_project
+├── project
 │   ├── asgi.py
 │   ├── __init__.py
 │   ├── settings.py

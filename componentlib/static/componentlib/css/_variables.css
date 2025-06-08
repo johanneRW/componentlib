@@ -1,65 +1,83 @@
 :root {
-    --color-background: #fdfdfd;
-    --color-tag-background: #dbd8d8;
-    --color-text-light: white;
-    --color-text-dark: #333;
-    --color-border: #ccc;
-    --color-primary: #5e92c8;
-    --color-secondary: #f3eeee;
-    --color-shadow: rgba(0, 0, 0, 0.1);
-    --color-nav-button-hover: #416b97;
-    --color-button-hover: #d0d0d0;
-    --color-copy-btn: #f0f0f0;
-    --color-code-file: #a7c9df;
-    --color-separator: #ccc;
-    --color-hr: #f7f6f6;
-    --color-markdown-background: #f6f8fa;
-    --color-heading-border: #eee;
-    --color-component-list-item: #f9f9f9;
-    --border-radius: 0.25rem;
-    --border-radius-lg: 0.3125rem;
-    --border-radius-xl: calc(var(--border-radius) * 2);
-    --border-radius-markdown: calc(var(--border-radius) + 0.125rem);
-    --padding-sm: 0.2em;
-    --padding-md: 0.4em;
-    --padding-lg: 1rem;
-    --padding-xl: 0.8em;
-    --margin-sm: 0.2rem;
-    --margin-md: 0.5rem;
-    --margin-lg: 1rem;
-    --margin-xl: 1.5rem;
-    --gap-sm: 0.25rem;
-    --gap-md: 0.5rem;
-    --gap-lg: 1.25rem;
-    --font-size-sm: 0.8rem;
-    --font-size-md: 0.9rem;
-    --font-size-lg: 1rem;
-    --font-size-xl: 1.2rem;
-    --line-height: 1.6;
-    --max-width: 80%;
-    --transition: background-color 0.3s;
-    --transform-transition: transform 0.2s;
-    --transform-scale: scale(1.02);
-    --box-shadow: 0 0.25rem 0.5rem var(--color-shadow);
-    --icon-size: 1rem;
-    --icon-margin: 0.25rem;
-    --opacity-missing: 0.25;
-    --nav-placeholder-width: 6.25rem;
-    --import-block-margin: 1.25rem;
-    --search-button-bg: #007BFF;
-    --search-button-hover: #0056b3;
-    --search-input-border: #ccc;
-    --search-input-font-size: 1rem;
-    --search-input-width: 18.75rem;
-    --clear-search-color: #007BFF;
-    --clear-search-font-size: 1rem;
-    --search-input-padding: 0.625rem;
-    --search-button-padding: 0.625rem 1.25rem;
-    --filter-label-font-size: 1rem;
-    --dropdown-select-padding: 0.625rem;
-    --dropdown-select-border-radius: 0.25rem;
-    --dropdown-select-border: 1px solid #ccc;
-    --dropdown-select-bg: #f8f9fa;
-    --dropdown-select-focus-border-color: #007BFF;
+/* Colors */
+--color-background: #fdfdfd;
+--color-tag-background: #dbd8d8;
+--color-text-light: white;
+--color-text-dark: #333;
+--color-border: #ccc;
+--color-primary: #5e92c8;
+--color-secondary: #f3eeee;
+--color-shadow: rgba(0, 0, 0, 0.1);
+--color-nav-button-hover: #416b97;
+--color-button-hover: #d0d0d0;
+--color-copy-btn: #f0f0f0;
+--color-code-file: #a7c9df;
+--color-separator: #ccc;
+--color-hr: #f7f6f6;
+--color-markdown-background: #f6f8fa;
+--color-heading-border: #eee;
+--color-component-list-item: #f9f9f9;
+--search-button-bg: #007BFF;
+--search-button-hover: #0056b3;
+--search-input-border: #ccc;
+--clear-search-color: #007BFF;
+--dropdown-select-border: 1px solid #ccc;
+--dropdown-select-bg: #f8f9fa;
+--dropdown-select-focus-border-color: #007BFF;
+
+/* Effects */
+--box-shadow: 0 0.25rem 0.5rem var(--color-shadow);
+--transition: background-color 0.3s;
+--transform-transition: transform 0.2s;
+--transform-scale: scale(1.02);
+
+/* Spacing */
+--padding-sm: 0.2em;
+--padding-md: 0.4em;
+--padding-lg: 1rem;
+--padding-xl: 0.8em;
+--margin-sm: 0.2rem;
+--margin-md: 0.5rem;
+--margin-lg: 1rem;
+--margin-xl: 1.5rem;
+--gap-sm: 0.25rem;
+--gap-md: 0.5rem;
+--gap-lg: 1.25rem;
+
+/* Typography */
+--font-size-sm: 0.8rem;
+--font-size-md: 0.9rem;
+--font-size-lg: 1rem;
+--font-size-xl: 1.2rem;
+--line-height: 1.6;
+
+/* Layout */
+--max-width: 80%;
+--nav-placeholder-width: 6.25rem;
+--import-block-margin: 1.25rem;
+
+/* Border Radius */
+--border-radius: 0.25rem;
+--border-radius-lg: 0.3125rem;
+--border-radius-xl: calc(var(--border-radius) * 2);
+--border-radius-markdown: calc(var(--border-radius) + 0.125rem);
+--dropdown-select-border-radius: 0.25rem;
+
+/* Icons */
+--icon-size: 1rem;
+--icon-margin: 0.25rem;
+
+/* Opacity */
+--opacity-missing: 0.25;
+
+/* Search Field */
+--search-input-font-size: 1rem;
+--search-input-width: 18.75rem;
+--search-input-padding: 0.625rem;
+--search-button-padding: 0.625rem 1.25rem;
+--clear-search-font-size: 1rem;
+
+/* Dropdown */
+--dropdown-select-padding: 0.625rem;
 }
 

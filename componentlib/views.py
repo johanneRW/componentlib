@@ -49,9 +49,9 @@ def component_browser(request):
 
     # Render the appropriate template based on the request type
     if request.headers.get("Hx-Request") == "true":
-        return render(request, "patternlib_browser/results_partial.html", context)
+        return render(request, "component_browser/results_partial.html", context)
     else:
-        return render(request, "patternlib_browser/index.html", context)
+        return render(request, "component_browser/index.html", context)
 
 
 
@@ -91,7 +91,7 @@ def component_detail(request, key):
         {'exists_key': 'readme_md', 'icon': 'readme.svg', 'alt': 'readme icon', 'extension': '.md'},
     ]
 
-    return render(request, "patternlib_browser/component_detail.html", {
+    return render(request, "component_browser/component_detail.html", {
         "component": component,
         "previous": previous,
         "next": next_comp,

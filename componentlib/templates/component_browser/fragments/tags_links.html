@@ -4,7 +4,5 @@ Forudsætter at 'component_browser' URL'en eksisterer
 {% endcomment %}
 
 {% for tag in tags %}
-  <a href="{% url 'component_browser' %}?tags={{ tag|urlencode }}" class="tag-link">
-    {{ tag }}
-  </a>
+  <a href="{% url 'component_browser' %}?tags={{ tag|urlencode }}" class="tag-link">{{ tag }}</a>
 {% endfor %}

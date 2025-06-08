@@ -98,17 +98,4 @@ document.addEventListener("DOMContentLoaded", function() {
       });
   });
 
-  const grid = document.querySelector('.component-grid');
-  if (grid) {
-    const items = grid.querySelectorAll('.component-list-item');
-
-    if (items.length > 10) {
-      // Flyt kortene til den anden kolonne, hvis der er mere end 10 kort
-      items.forEach((item, index) => {
-        if (index >= 10) {
-          item.style.gridColumn = '2';
-        }
-      });
-    }
-  }
 });

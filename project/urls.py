@@ -1,5 +1,5 @@
 """
-URL configuration for demo_project project.
+URL configuration for project project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -19,7 +19,7 @@ from django.urls import path, include
 from componentlib.views import redirect_to_components
 
 urlpatterns = [
-    path("", redirect_to_components, name="home"),  # ← flyttet hertil!
+    path("", redirect_to_components, name="home"),
     path("admin/", admin.site.urls),
     path("components/", include("componentlib.urls")),
 ]

@@ -1,0 +1,14 @@
+{% load custom_filters %}
+
+<div class="search-and-filter-container">
+    {% include "component_browser/fragments/search_form.html" %}
+    {% include "component_browser/fragments/tech_dropdown.html" %}
+</div>
+
+{% include "component_browser/fragments/active_tags.html" %}
+{% include "component_browser/fragments/tag_filter.html" %}
+
+<hr>
+
+{% include "component_browser/fragments/filtered_results.html" %}
+{% include "component_browser/fragments/alphabetical_list.html" %}

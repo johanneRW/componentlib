@@ -19,3 +19,10 @@
     display: flex;
     flex-wrap: wrap;
 }
+.tag-link::before, .active-tag::before {
+    content: "#";
+}
+
+.tag-link.selected::before {
+    content: "✔ #";
+}
