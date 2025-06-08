@@ -1,5 +1,5 @@
 <section>
-  <h2>Kodefiler</h2>
+  <h2>Code Files</h2>
   <div class="button-container">
       {% for filename in code_files %}
       <div class="code-file">
@@ -7,7 +7,7 @@
                   data-loaded="false"
                   data-url="{% url 'component_code' key=component.key %}?file={{ filename }}"
                   data-filename="{{ filename }}">
-              Vis {{ filename }}
+              Show {{ filename }}
               {% if filename == "template" %}.html
               {% elif filename == "readme" %}.md
               {% else %}.py

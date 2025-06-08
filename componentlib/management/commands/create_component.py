@@ -66,6 +66,11 @@ class Command(BaseCommand):
 
         try:
             os.makedirs(path)
+            # Create __init__.py file
+            init_file = path / "__init__.py"
+            init_file.touch()  # This creates an empty file
+            self.stdout.write(f"  - Created __init__.py")
+
             templates = TemplateGenerator.generate_templates(context, include_py, include_html, include_readme)
             for filename, content in templates.items():
                 with open(path / filename, "w", encoding="utf-8") as f:

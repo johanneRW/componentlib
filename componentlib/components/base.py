@@ -12,7 +12,7 @@ class BaseComponent:
         self.base_path = Path(base_path) if base_path else Path(inspect.getfile(self.__class__)).resolve().parent
         self.metadata = self.load_metadata()
 
-        # Advar hvis ._validated ikke er sat af Props
+        # Warn if ._validated is not set by Props
         if not getattr(self, "_validated", False):
             print(f"[WARNING] ⚠️  {self.__class__.__name__} input not validated via Props model.")
 
@@ -24,11 +24,9 @@ class BaseComponent:
             return yaml.safe_load(f)
 
     def get_context_data(self) -> dict:
-        print("[DEBUG] DEFAULT get_context_data (BaseComponent)")
         return self.context
 
     def render(self) -> str:
-        print("[RENDER] BaseComponent.render() CALLED")
         template_path = self.base_path / self.template_filename
         template_string = template_path.read_text(encoding="utf-8")
         django_engine = engines["django"]
