@@ -1,7 +1,7 @@
 {% load custom_filters %}
 
 <div>
-  <span>Dokumentation:</span>
+  <span>Documentation:</span>
   <span class="{% if not comp.exists.metadata_yaml %}missing{% endif %}">
     <img class="file-icon" src="/static/icons/metadata.svg" alt="metadata icon">
     {% if comp.exists.metadata_yaml %}.yaml{% endif %}

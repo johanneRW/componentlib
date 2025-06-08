@@ -7,11 +7,11 @@ inputs:
   label:
     type: string
     required: true
-    default: "Vælg noget" 
+    default: "Vælg kategori" 
   options:
     type: list
     required: true
-    default: ["A", "B", "C"]
+    default: ["Nyhed", "Artikel", "Begivenhed"]
   target_url:
     type: string
     required: true

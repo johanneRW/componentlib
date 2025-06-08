@@ -91,11 +91,13 @@ class Command(BaseCommand):
             if "default" in info:
                 example_data[key] = info["default"]
 
-        new_content = json.dumps(example_data, indent=2)
+        # Use ensure_ascii=False to allow non-ASCII characters in the JSON output
+        new_content = json.dumps(example_data, indent=2, ensure_ascii=False)
 
         if example_path.exists() and example_path.read_text(encoding="utf-8").strip() == new_content.strip():
             self.stdout.write(self.style.NOTICE(f"[=] {component_dir.name}/example.json unchanged"))
         else:
             example_path.write_text(new_content + "\n", encoding="utf-8")
             self.stdout.write(self.style.SUCCESS(f"[✔] {component_dir.name}/example.json updated"))
+
 

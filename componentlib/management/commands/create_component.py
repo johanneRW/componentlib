@@ -4,8 +4,8 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
-from case_utils import CaseUtils
-from template_generator import TemplateGenerator
+from componentlib.helpers.case_utils import CaseUtils
+from componentlib.helpers.template_generator import TemplateGenerator
 
 COMPONENTS_DIR = Path(__file__).resolve().parent.parent.parent / "components"
 

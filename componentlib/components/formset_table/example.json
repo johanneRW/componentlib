@@ -1,8 +1,4 @@
 {
-    "columns": ["cpr_cvr_tin", "udbytte"],
-    "formset": [
-      {"cpr_cvr_tin": "12345678", "udbytte": "1000"},
-      {"cpr_cvr_tin": "87654321", "udbytte": "1500"}
-    ]
-  }
-  
+  "content": "",
+  "is_active": true
+}
