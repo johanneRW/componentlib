@@ -1,19 +1,18 @@
 import yaml
 import json
 from pathlib import Path
-from pydantic import BaseModel, Field
 from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Genererer props.py og example.json baseret på metadata.yaml"
+    help = "Generates props.py and example.json based on metadata.yaml"
 
     def add_arguments(self, parser):
         parser.add_argument(
             "component",
             nargs="?",
             default=None,
-            help="(Valgfrit) Navn på komponentmappe – ellers køres for alle"
+            help="(Optional) Name of the component folder – otherwise runs for all"
         )
 
     def handle(self, *args, **options):
@@ -27,12 +26,12 @@ class Command(BaseCommand):
 
         for component_dir in component_dirs:
             if not component_dir.exists():
-                self.stdout.write(self.style.ERROR(f"[✗] Mappen '{component_dir}' findes ikke."))
+                self.stdout.write(self.style.ERROR(f"[✗] The folder '{component_dir}' does not exist."))
                 continue
 
             metadata_path = component_dir / "metadata.yaml"
             if not metadata_path.exists():
-                self.stdout.write(self.style.WARNING(f"[SKIP] {component_dir.name} (ingen metadata.yaml)"))
+                self.stdout.write(self.style.WARNING(f"[SKIP] {component_dir.name} (no metadata.yaml)"))
                 continue
 
             with open(metadata_path, "r", encoding="utf-8") as f:
@@ -77,10 +76,10 @@ class Command(BaseCommand):
         new_content = "\n".join(lines) + "\n"
 
         if output_path.exists() and output_path.read_text(encoding="utf-8") == new_content:
-            self.stdout.write(self.style.NOTICE(f"[=] {component_dir.name}/props.py uændret"))
+            self.stdout.write(self.style.NOTICE(f"[=] {component_dir.name}/props.py unchanged"))
         else:
             output_path.write_text(new_content, encoding="utf-8")
-            self.stdout.write(self.style.SUCCESS(f"[✔] {component_dir.name}/props.py opdateret"))
+            self.stdout.write(self.style.SUCCESS(f"[✔] {component_dir.name}/props.py updated"))
 
 
     def generate_example_json(self, component_dir: Path, metadata: dict):
@@ -95,8 +94,8 @@ class Command(BaseCommand):
         new_content = json.dumps(example_data, indent=2)
 
         if example_path.exists() and example_path.read_text(encoding="utf-8").strip() == new_content.strip():
-            self.stdout.write(self.style.NOTICE(f"[=] {component_dir.name}/example.json uændret"))
+            self.stdout.write(self.style.NOTICE(f"[=] {component_dir.name}/example.json unchanged"))
         else:
             example_path.write_text(new_content + "\n", encoding="utf-8")
-            self.stdout.write(self.style.SUCCESS(f"[✔] {component_dir.name}/example.json opdateret"))
+            self.stdout.write(self.style.SUCCESS(f"[✔] {component_dir.name}/example.json updated"))
 

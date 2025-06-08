@@ -16,44 +16,44 @@ def yes_or_no(prompt, default="y", style=None):
     while True:
         val = input(f"{prompt} [{'Y/n' if default == 'y' else 'y/N'}]: ").strip().lower()
         if val in ("q", "quit"):
-            raise SystemExit("Afbrudt af bruger.")
+            raise SystemExit("Aborted by user.")
         if val in valid:
             return valid[val]
-        print(style.ERROR("Ugyldigt svar. Skriv 'y', 'n' eller 'q'") if style else "Ugyldigt svar.")
+        print(style.ERROR("Invalid response. Enter 'y', 'n', or 'q'") if style else "Invalid response.")
 
 class Command(BaseCommand):
-    help = "Interaktiv oprettelse af ny Django-komponent"
+    help = "Interactive creation of a new Django component"
 
     def handle(self, *args, **options):
         while True:
-            raw_name = input("Navn på komponent (fx product_card): ").strip()
+            raw_name = input("Component name (e.g., product_card): ").strip()
             if not raw_name:
-                self.stdout.write(self.style.ERROR("Navn krævet."))
+                self.stdout.write(self.style.ERROR("Name is required."))
                 continue
             if not CaseUtils.is_valid_component_name(raw_name):
-                self.stdout.write(self.style.ERROR("Ugyldigt navn."))
+                self.stdout.write(self.style.ERROR("Invalid name."))
                 continue
 
             name = CaseUtils.to_snake_case(raw_name)
             path = COMPONENTS_DIR / name
 
             if path.exists():
-                self.stdout.write(self.style.WARNING(f"'{name}' findes allerede."))
-                if not yes_or_no("Vil du prøve et andet navn?", default="y", style=self.style):
+                self.stdout.write(self.style.WARNING(f"'{name}' already exists."))
+                if not yes_or_no("Do you want to try another name?", default="y", style=self.style):
                     return
                 continue
             break
 
         display_name = CaseUtils.to_title_case(name)
         class_name = f"{CaseUtils.to_pascal_case(name)}Component"
-        author = input(f"Forfatterens navn [{os.getenv('USER') or 'ukendt'}]: ").strip() or os.getenv("USER") or "ukendt"
+        author = input(f"Author's name [{os.getenv('USER') or 'unknown'}]: ").strip() or os.getenv("USER") or "unknown"
 
-        include_py = yes_or_no("Opret component.py?", default="y", style=self.style)
-        include_html = yes_or_no("Opret template.html?", default="y", style=self.style)
-        include_readme = yes_or_no("Opret README.md?", default="y", style=self.style)
+        include_py = yes_or_no("Create component.py?", default="y", style=self.style)
+        include_html = yes_or_no("Create template.html?", default="y", style=self.style)
+        include_readme = yes_or_no("Create README.md?", default="y", style=self.style)
 
         if not include_py and not include_html:
-            raise CommandError("Skal vælge mindst én filtype.")
+            raise CommandError("At least one file type must be selected.")
 
         context = {
             "component_name": name,
@@ -70,9 +70,9 @@ class Command(BaseCommand):
             for filename, content in templates.items():
                 with open(path / filename, "w", encoding="utf-8") as f:
                     f.write(content)
-                self.stdout.write(f"  - Oprettet {filename}")
-            self.stdout.write(self.style.SUCCESS(f"✓ Komponent '{name}' oprettet i '{path}'"))
+                self.stdout.write(f"  - Created {filename}")
+            self.stdout.write(self.style.SUCCESS(f"✓ Component '{name}' created in '{path}'"))
         except Exception as e:
             if path.exists():
                 shutil.rmtree(path)
-            raise CommandError(f"Fejl under oprettelse: {e}")
+            raise CommandError(f"Error during creation: {e}")

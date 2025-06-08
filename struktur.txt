@@ -36,11 +36,9 @@
 │   │   ├── registry.py
 │   │   ├── render.py
 │   │   └── template_generator.py
-│   ├── htmx_router.py
 │   ├── __init__.py
 │   ├── management
 │   │   ├── commands
-│   │   │   ├── components_help.py
 │   │   │   ├── create_component.py
 │   │   │   ├── generate_component_model.py
 │   │   │   └── __init__.py
@@ -74,30 +72,30 @@
 │   │   │   └── template.svg
 │   │   └── __init__.py
 │   ├── templates
-│   │   ├── __init__.py
-│   │   └── component_browser
-│   │       ├── component_detail.html
-│   │       ├── fragments
-│   │       │   ├── active_tags.html
-│   │       │   ├── alphabetical_list.html
-│   │       │   ├── code_files.html
-│   │       │   ├── component_card.html
-│   │       │   ├── component_docs.html
-│   │       │   ├── component_header.html
-│   │       │   ├── component_tech.html
-│   │       │   ├── description.html
-│   │       │   ├── example.html
-│   │       │   ├── filtered_results.html
-│   │       │   ├── header.html
-│   │       │   ├── import_guide.html
-│   │       │   ├── navigation.html
-│   │       │   ├── search_form.html
-│   │       │   ├── tag_filter.html
-│   │       │   ├── tags.html
-│   │       │   ├── tags_links.html
-│   │       │   └── tech_dropdown.html
-│   │       ├── index.html
-│   │       └── results_partial.html
+│   │   ├── component_browser
+│   │   │   ├── component_detail.html
+│   │   │   ├── fragments
+│   │   │   │   ├── active_tags.html
+│   │   │   │   ├── alphabetical_list.html
+│   │   │   │   ├── code_files.html
+│   │   │   │   ├── component_card.html
+│   │   │   │   ├── component_docs.html
+│   │   │   │   ├── component_header.html
+│   │   │   │   ├── component_tech.html
+│   │   │   │   ├── description.html
+│   │   │   │   ├── example.html
+│   │   │   │   ├── filtered_results.html
+│   │   │   │   ├── header.html
+│   │   │   │   ├── import_guide.html
+│   │   │   │   ├── navigation.html
+│   │   │   │   ├── search_form.html
+│   │   │   │   ├── tag_filter.html
+│   │   │   │   ├── tags.html
+│   │   │   │   ├── tags_links.html
+│   │   │   │   └── tech_dropdown.html
+│   │   │   ├── index.html
+│   │   │   └── results_partial.html
+│   │   └── __init__.py
 │   ├── templatetags
 │   │   ├── component_tags.py
 │   │   ├── custom_filters.py
@@ -112,17 +110,17 @@
 │   ├── SOURCES.txt
 │   └── top_level.txt
 ├── db.sqlite3
+├── dist
+│   ├── componentlib-0.7-py3-none-any.whl
+│   └── componentlib-0.7.tar.gz
+├── manage.py
+├── MANIFEST.in
 ├── project
 │   ├── asgi.py
 │   ├── __init__.py
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
-├── dist
-│   ├── componentlib-0.7-py3-none-any.whl
-│   └── componentlib-0.7.tar.gz
-├── manage.py
-├── MANIFEST.in
 ├── pyproject.toml
 ├── README.md
 ├── requirements.txt
@@ -130,4 +128,4 @@
 │   └── watch_components.py
 └── struktur.txt
 
-21 directories, 109 files
+21 directories, 107 files

@@ -1,6 +1,6 @@
 {% load custom_filters %}
-<section aria-label="Filtrér efter tags">
-    <h3>Filtrér efter tags:</h3>
+<section aria-label="Filter by tags">
+    <h3>Filter by tags:</h3>
     <nav class="tag-nav">
         {% for t in all_tags %}
             {% with t_lower=t|lower %}

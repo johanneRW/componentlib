@@ -54,7 +54,6 @@ def component_browser(request):
         return render(request, "component_browser/index.html", context)
 
 
-
 def component_detail(request, key):
     base_path = Path(__file__).resolve().parent / "components" / key
 
@@ -100,10 +99,11 @@ def component_detail(request, key):
         "doc_list": doc_list,
     })
 
+
 def component_code(request, key):
     filename = request.GET.get("file")
     if not filename:
-        return HttpResponseNotFound("Filnavn mangler.")
+        return HttpResponseNotFound("Filename is missing.")
 
     base_path = Path(__file__).resolve().parent / "components" / key
 
@@ -120,12 +120,12 @@ def component_code(request, key):
                 file_path = fname
                 break
         if not file_path:
-            return HttpResponseNotFound("README.md ikke fundet.")
+            return HttpResponseNotFound("README.md not found.")
     else:
-        return HttpResponseNotFound("Ukendt filtype.")
+        return HttpResponseNotFound("Unknown file type.")
 
     if not file_path.exists():
-        return HttpResponseNotFound("Filen blev ikke fundet.")
+        return HttpResponseNotFound("The file was not found.")
 
     code = file_path.read_text(encoding="utf-8")
     if filename == "readme":

@@ -7,10 +7,10 @@ from watchdog.events import FileSystemEventHandler
 
 COMPONENTS_DIR = Path(__file__).resolve().parent.parent / "componentlib" / "components"
 
-# Cooldown-måler pr. komponent
+# Cooldown tracker per component
 last_run = {}
 
-COOLDOWN_SECONDS = 2  # minimum tid mellem triggers pr. komponent
+COOLDOWN_SECONDS = 2  # Minimum time between triggers per component
 
 
 def should_run(component_name):
@@ -29,9 +29,9 @@ class ComponentChangeHandler(FileSystemEventHandler):
         changed_path = Path(event.src_path)
 
         if changed_path.name not in ["metadata.yaml", "component.py"]:
-            return  # kun reagér på specifikke filer
+            return  # Only react to specific files
 
-        # Find nærmeste komponentmappe
+        # Find the nearest component folder
         component_dir = changed_path.parent
         while component_dir.parent != COMPONENTS_DIR and component_dir != COMPONENTS_DIR:
             component_dir = component_dir.parent

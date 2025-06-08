@@ -1,6 +1,6 @@
 import importlib
 from django import template
-from componentlib.helpers.render import render_component  # din eksisterende
+from componentlib.helpers.render import render_component  # your existing helper
 import html
 
 register = template.Library()
@@ -8,13 +8,13 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def render_component_tag(context, name, **kwargs):
     """
-    Brug: {% render_component_tag "navn" key1=value1 key2=value2 %}
+    Usage: {% render_component_tag "name" key1=value1 key2=value2 %}
     """
     try:
         rendered = render_component(name, kwargs)
-        return rendered  # allerede safe HTML
+        return rendered  # already safe HTML
     except Exception as e:
-        return f"<em>Fejl i komponent '{name}': {html.escape(str(e))}</em>"
+        return f"<em>Error in component '{name}': {html.escape(str(e))}</em>"
 
 
 def get_component_class(key):

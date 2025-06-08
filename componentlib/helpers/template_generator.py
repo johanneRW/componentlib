@@ -5,15 +5,15 @@ class TemplateGenerator:
     def generate_templates(context, include_py, include_html, include_readme):
         TEMPLATE_FILES = {}
 
-        # Python-komponent
+        # Python component
         if include_py:
             TEMPLATE_FILES["component.py"] = TemplateGenerator._generate_py_template(context)
 
-        # HTML-template
+        # HTML template
         if include_html:
             TEMPLATE_FILES["template.html"] = TemplateGenerator._generate_html_template()
 
-        # Eksempeldata
+        # Example data
         TEMPLATE_FILES["example.json"] = TemplateGenerator._generate_example_json()
 
         # metadata.yaml
@@ -44,15 +44,15 @@ class {context["class_name"]}(BaseComponent):
     @staticmethod
     def _generate_html_template():
         return '''<!--
-TODO: Overvej at tilføje {{ attributes.class if attributes.class else '' }} til dette HTML-element.
-Dette vil tillade mere fleksibel styling ved at give dig mulighed for at tilføje CSS-klasser dynamisk.
-Fordele:
-- Fleksibilitet: Giver frontend-udviklere mulighed for at tilpasse styling direkte fra det relevante projekts stylesheet, hvilket gør det nemmere at tilpasse komponentens udseende til forskellige dele af applikationen.
-- Genanvendelighed: Øger komponentens genanvendelighed, da den kan tilpasses til forskellige kontekster uden at skulle ændre den underliggende HTML-struktur.
-- Vedligeholdelse: Foreenkler vedligeholdelsen af styling, da ændringer kan centraliseres i CSS-filer i stedet for at skulle spredes ud over flere templates.
+TODO: Consider adding {{ attributes.class if attributes.class else '' }} to this HTML element.
+This will allow for more flexible styling by enabling you to dynamically add CSS classes.
+Advantages:
+- Flexibility: Allows frontend developers to customize styling directly from the relevant project's stylesheet, making it easier to adapt the component's appearance to different parts of the application.
+- Reusability: Increases the reusability of the component, as it can be adapted to different contexts without modifying the underlying HTML structure.
+- Maintainability: Simplifies the maintenance of styling, as changes can be centralized in CSS files instead of being spread across multiple templates.
 
-Hvis du ikke har brug for denne funktionalitet, kan du frit vælge at udelade det.
-Eksempel: <div class="{{ attributes.class if attributes.class else '' }}">
+If you do not need this functionality, feel free to omit it.
+Example: <div class="{{ attributes.class if attributes.class else '' }}">
 -->
 <div>
   {{ content }}
@@ -62,17 +62,17 @@ Eksempel: <div class="{{ attributes.class if attributes.class else '' }}">
     @staticmethod
     def _generate_example_json():
         example_data = {
-            "content": "Eksempelindhold"
+            "content": "Example content"
         }
         return json.dumps(example_data, indent=2)
 
     @staticmethod
     def _generate_metadata_yaml(context):
-        metadata_inputs_block = "  content:\n    type: string\n    required: true\n    default: \"Eksempelindhold\""
+        metadata_inputs_block = "  content:\n    type: string\n    required: true\n    default: \"Example content\""
         return f'''name: {context["component_name"]}
 display_name: {context["display_name"]}
 class_name: {context["class_name"]}
-description: Skriv en beskrivelse af komponenten her.
+description: Write a description of the component here.
 tags: []
 inputs:
 {metadata_inputs_block}
@@ -88,10 +88,10 @@ component_data:
         props_lines = [
             "from pydantic import BaseModel, Field\n",
             f"class {context['class_name']}Props(BaseModel):",
-            "    content: str = Field(\"Eksempelindhold\")"
+            "    content: str = Field(\"Example content\")"
         ]
         return "\n".join(props_lines) + "\n"
 
     @staticmethod
     def _generate_readme(context):
-        return f"# {context['display_name']}\n\nBeskrivelse af komponenten, stilguides eller andet relevant."
+        return f"# {context['display_name']}\n\nDescription of the component, style guides, or other relevant information."

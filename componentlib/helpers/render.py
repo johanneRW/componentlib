@@ -4,19 +4,18 @@ from pathlib import Path
 
 def render_component(key: str, kwargs: dict = None) -> str:
     try:
-        # Find stien til komponentmappen
+        # Find the path to the component folder
         base_path = Path(__file__).resolve().parent.parent / "components" / key
 
-        # Importer Python-modulet dynamisk
+        # Dynamically import the Python module
         module_path = f"componentlib.components.{key}.component"
         module = importlib.import_module(module_path)
 
-        # Find den klasse der ender på "Component"
+        # Find the class that ends with "Component"
         class_name = next(name for name in dir(module) if name.endswith("Component"))
         cls = getattr(module, class_name)
-        print("[RENDER PREVIEW] Using class:", cls.__name__)
 
-        # Brug kwargs hvis de gives, ellers læs example.json
+        # Use kwargs if provided, otherwise read example.json
         if not kwargs:
             example_path = base_path / "example.json"
             if example_path.exists():
@@ -25,9 +24,10 @@ def render_component(key: str, kwargs: dict = None) -> str:
             else:
                 kwargs = {}
 
-        # Instantiér og render komponenten
+        # Instantiate and render the component
         instance = cls(**kwargs)
         return instance.render()
 
     except Exception as e:
-        return f"<em>Fejl i komponent '{key}': {e}</em>"
+        # Return an error message if something goes wrong
+        return f"<em>Error in component '{key}': {e}</em>"

@@ -1,13 +1,13 @@
 <section class="mt-6">
-  <h2>Importvejledning</h2>
+  <h2>Import Guide</h2>
   <p class="hint-text">
-    Husk at erstatte <code>...</code> eller <code>value</code> med dine egne værdier fra projektet. Data-formatet er vist i eksempeldata ovenfor.
+    Remember to replace <code>...</code> or <code>value</code> with your own values from the project. The data format is shown in the example data above.
   </p>
   <p class="hint-text">
-    Hvis templaten har attributes.class, kan du tilføje ekstra klasser til styling, f.eks.: <code>&lt;div class="{% templatetag openblock %} attributes.class {% templatetag closeblock %} my-custom-class another-class"&gt;</code>
+    If the template has attributes.class, you can add extra classes for styling, e.g.: <code>&lt;div class="{% templatetag openblock %} attributes.class {% templatetag closeblock %} my-custom-class another-class"&gt;</code>
   </p>
   <p class="hint-text">
-    Hvis du bruger HTMX-elementer, skal du sørge for at inkludere følgende script i din header: <code>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.4/htmx.min.js"&gt;&lt;/script&gt;</code>
+    If you are using HTMX elements, make sure to include the following script in your header: <code>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.4/htmx.min.js"&gt;&lt;/script&gt;</code>
   </p>
   <div class="import-block">
     {{ component.import_hint|safe }}

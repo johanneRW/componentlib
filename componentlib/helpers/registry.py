@@ -5,7 +5,7 @@ from pathlib import Path
 from .htmx_detect import detect_component_capabilities
 
 
-# Internt lager af registrerede komponentklasser
+# Internal storage for registered component classes
 _component_classes = {}
 
 def load_all_components_metadata():
@@ -19,7 +19,7 @@ def load_all_components_metadata():
                 data = yaml.safe_load(f)
                 data["key"] = comp_dir.name
 
-                # Check eksisterende filer
+                # Check for existing files
                 data["exists"] = {
                     "component_py": (comp_dir / "component.py").exists(),
                     "template_html": (comp_dir / "template.html").exists(),
@@ -28,16 +28,16 @@ def load_all_components_metadata():
                     "example_json": (comp_dir / "example.json").exists(),
                 }
 
-                # Metadata-tags fra YAML
+                # Metadata tags from YAML
                 metadata_tags = data.get("tags", [])
-                data["tags"] = metadata_tags  # ← kun brugerdefinerede tags
+                data["tags"] = metadata_tags  # ← only user-defined tags
 
-                # Find capabilities
+                # Detect capabilities
                 template_file = comp_dir / "template.html"
                 capabilities = detect_component_capabilities(template_file)
-                data["capabilities"] = capabilities  # gem også raw capabilities
+                data["capabilities"] = capabilities  # also store raw capabilities
 
-                # Byg system-teknologier
+                # Build system technologies
                 system_technologies = []
                 if data["exists"]["component_py"]:
                     system_technologies.append("django")
@@ -46,9 +46,9 @@ def load_all_components_metadata():
                 elif capabilities["has_simple_html"]:
                     system_technologies.append("html")
 
-                data["technologies"] = system_technologies  # ← system-tags gemt her
+                data["technologies"] = system_technologies  # ← system tags stored here
 
-                # Forsøg at importere komponentklassen
+                # Attempt to import the component class
                 try:
                     module_path = f"componentlib.components.{comp_dir.name}.component"
                     module = importlib.import_module(module_path)
@@ -75,9 +75,7 @@ def load_all_components_metadata():
     return components
 
 
-
-
 def get_component_class(name):
-    """Hent komponentklasse ud fra mappe-navn (key)"""
+    """Retrieve component class based on folder name (key)"""
     return _component_classes.get(name)
 

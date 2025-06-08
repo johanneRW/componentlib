@@ -1,8 +1,8 @@
 <form hx-get="." hx-target="#results" hx-push-url="true" class="search-form">
-  <input type="text" name="q" value="{{ q }}" placeholder="Søg komponenter..." class="search-input" />
-  <button type="submit" class="search-button">Søg</button>
+  <input type="text" name="q" value="{{ q }}" placeholder="Search components..." class="search-input" />
+  <button type="submit" class="search-button">Search</button>
 
-  <!-- Skjulte inputfelter for aktive filtre -->
+  <!-- Hidden input fields for active filters -->
   {% for tag in selected_tags %}
     <input type="hidden" name="tags" value="{{ tag }}" />
   {% endfor %}
@@ -12,6 +12,6 @@
   {% endfor %}
 
   {% if q %}
-    <a href="." class="clear-search">❌ Ryd søgning</a>
+    <a href="." class="clear-search">❌ Clear search</a>
   {% endif %}
 </form>

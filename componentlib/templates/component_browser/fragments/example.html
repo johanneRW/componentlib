@@ -1,22 +1,22 @@
 <section class="example-container">
   <div class="component-preview">
-      <h2>Eksempel</h2>
+      <h2>Example</h2>
       {% if component.rendered %}
           {{ component.rendered|safe }}
       {% else %}
-          <em>Ingen template tilgængelig for denne komponent.</em>
+          <em>No template available for this component.</em>
       {% endif %}
   </div>
 
   {% if component.example_data_block %}
       <div class="example-data">
-          <h3>Eksempeldata</h3>
+          <h3>Example Data</h3>
           <pre><code id="example-data-{{ component.key }}">{{ component.example_data_block }}</code></pre>
           <button class="copy-btn"
                     hx-get="/dummy-endpoint"
                     hx-trigger="click"
                     data-code-id="example-data-{{ component.key }}">
-                <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Kopier eksempeldata
+                <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> Copy Example Data
             </button>  
       </div>
   {% endif %}
