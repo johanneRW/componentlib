@@ -1,6 +1,6 @@
 MANIFEST.in
 README.md
-setup.py
+pyproject.toml
 componentlib/__init__.py
 componentlib/admin.py
 componentlib/apps.py
@@ -105,8 +105,3 @@ componentlib/templates/patternlib_browser/fragments/tech_dropdown.html
 componentlib/templatetags/__init__.py
 componentlib/templatetags/component_tags.py
 componentlib/templatetags/custom_filters.py
-demo_project/__init__.py
-demo_project/asgi.py
-demo_project/settings.py
-demo_project/urls.py
-demo_project/wsgi.py

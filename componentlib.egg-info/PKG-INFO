@@ -1,11 +1,10 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: componentlib
-Version: 0.1
+Version: 0.7
 Summary: A Django component library
-Home-page: https://github.com/johanneRW/componentlib.git
 Author: Johanne R. W.
 License: MIT
-Platform: UNKNOWN
+Project-URL: Homepage, https://github.com/johanneRW/componentlib.git
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.7
@@ -14,6 +13,10 @@ Classifier: Programming Language :: Python :: 3.9
 Classifier: Framework :: Django
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
+Requires-Dist: Django>=4.2
+Requires-Dist: pyyaml
+Requires-Dist: rapidfuzz>=3.13.0
+Requires-Dist: watchdog>=6.0.0
+Requires-Dist: pydantic>=2.11.4
 
 komponetbiblotek til magenta
-

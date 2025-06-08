@@ -1,2 +1,1 @@
 componentlib
-demo_project
