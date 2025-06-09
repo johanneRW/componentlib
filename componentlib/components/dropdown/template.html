@@ -1,15 +1,18 @@
-<div class="c-dropdown {{ attributes.class }}">
-    <label>{{ label }}</label>
-    <select
-      name="dropdown"
-      hx-get="{{ target_url }}"
-      hx-target="#dropdown-result"
-      hx-trigger="change"
-      class="c-dropdown__select {{ attributes.select_class }}"
-    >
-      {% for option in options %}
-        <option value="{{ option }}">{{ option }}</option>
-      {% endfor %}
-    </select>
-    <div id="dropdown-result" class="c-dropdown__result"></div>
+<div class="c-dropdown {{ attributes.class|default:'' }}">
+  <label for="{{ name }}">{{ label }}</label>
+  <select
+    name="{{ name }}"
+    id="{{ name }}"
+    hx-get="{{ target_url }}"
+    hx-target="#dropdown-result"
+    hx-trigger="change"
+    class="c-dropdown__select {{ attributes.select_class|default:'' }}"
+>
+    <option value="" selected>{{ placeholder|default:"________" }}</option>
+
+    {% for value, label in options %}
+        <option value="{{ value }}">{{ label }}</option>
+    {% endfor %}
+</select>
+  <div id="dropdown-result" class="c-dropdown__result"></div>
 </div>

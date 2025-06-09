@@ -1,11 +1,12 @@
-import yaml
 import json
 from pathlib import Path
+from collections import defaultdict
 from django.core.management.base import BaseCommand
 
 
+
 class Command(BaseCommand):
-    help = "Generates props.py and example.json based on metadata.yaml"
+    help = "Generates props.py based on example.json"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -29,49 +30,93 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"[✗] The folder '{component_dir}' does not exist."))
                 continue
 
-            metadata_path = component_dir / "metadata.yaml"
-            if not metadata_path.exists():
-                self.stdout.write(self.style.WARNING(f"[SKIP] {component_dir.name} (no metadata.yaml)"))
+            example_path = component_dir / "example.json"
+            if not example_path.exists():
+                self.stdout.write(self.style.WARNING(f"[SKIP] {component_dir.name} (no example.json)"))
                 continue
 
-            with open(metadata_path, "r", encoding="utf-8") as f:
-                metadata = yaml.safe_load(f)
+            with open(example_path, "r", encoding="utf-8") as f:
+                example_data = json.load(f)
 
-            self.generate_props(component_dir, metadata)
-            self.generate_example_json(component_dir, metadata)
+            self.generate_props_from_example(component_dir, example_data)
 
-    def generate_props(self, component_dir: Path, metadata: dict):
-        class_name = metadata.get("class_name", "UnnamedComponent")
-        inputs = metadata.get("inputs", {})
+    def generate_props_from_example(self, component_dir: Path, example_data: dict):
+        from collections import defaultdict
 
+        class_name = component_dir.name.title().replace("-", "").replace("_", "") + "ComponentProps"
+        used_types = defaultdict(bool)
+
+        def infer_type(value):
+            # Handle None
+            if value is None:
+                used_types["Optional"] = True
+                used_types["Any"] = True
+                return "Optional[Any]"
+
+            # Handle strings, numbers, bool
+            if isinstance(value, str):
+                return "str"
+            if isinstance(value, bool):
+                return "bool"
+            if isinstance(value, int):
+                return "int"
+            if isinstance(value, float):
+                return "float"
+
+            # Handle list values
+            if isinstance(value, list):
+                used_types["List"] = True
+
+                # Literal if simple, short list of primitive values
+                if all(isinstance(v, (str, int, float, bool)) for v in value) and len(set(value)) <= 10:
+                    used_types["Literal"] = True
+                    literals = ", ".join(repr(v) for v in sorted(set(value)))
+                    return f"Literal[{literals}]"
+
+                # Tuple[str, str] for list of 2-element lists
+                if all(isinstance(i, list) and len(i) == 2 and all(isinstance(j, str) for j in i) for i in value):
+                    used_types["Tuple"] = True
+                    return "List[Tuple[str, str]]"
+
+                return "List[Any]"
+
+            # Handle dict
+            if isinstance(value, dict):
+                used_types["Dict"] = True
+                return "Dict[str, Any]"
+
+            # Default fallback
+            used_types["Any"] = True
+            return "Any"
+
+        # Header and imports
         lines = [
-            "from pydantic import BaseModel, Field\n",
-            f"class {class_name}Props(BaseModel):"
+            f'__all__ = ["{class_name}"]\n',
+            "from pydantic import BaseModel, Field"
         ]
 
-        if not inputs:
-            lines.append("    pass")
+        # Build fields
+        fields = []
+        for key, value in example_data.items():
+            inferred_type = infer_type(value)
+            default_repr = repr(value)
+            fields.append(f"    {key}: {inferred_type} = Field({default_repr})")
+
+        # Build typing import line dynamically
+        typing_imports = ", ".join(sorted(k for k, v in used_types.items() if v))
+        if typing_imports:
+            lines.append(f"from typing import {typing_imports}\n")
         else:
-            for key, info in inputs.items():
-                typ = info.get("type", "string")
-                required = info.get("required", False)
-                default = info.get("default", None)
+            lines.append("")  # for spacing
 
-                py_type = {
-                    "string": "str",
-                    "number": "float",
-                    "boolean": "bool",
-                    "list": "list",
-                    "dict": "dict",
-                }.get(typ, "str")
+        # Class header
+        lines.append(f"class {class_name}(BaseModel):")
+        if fields:
+            lines.extend(fields)
+        else:
+            lines.append("    pass")
 
-                if required:
-                    line = f"    {key}: {py_type} = Field(..., description='Required')"
-                else:
-                    line = f"    {key}: {py_type} = Field({repr(default)})"
-
-                lines.append(line)
-
+        # Write to file
         output_path = component_dir / "props.py"
         new_content = "\n".join(lines) + "\n"
 
@@ -80,24 +125,4 @@ class Command(BaseCommand):
         else:
             output_path.write_text(new_content, encoding="utf-8")
             self.stdout.write(self.style.SUCCESS(f"[✔] {component_dir.name}/props.py updated"))
-
-
-    def generate_example_json(self, component_dir: Path, metadata: dict):
-        example_path = component_dir / "example.json"
-        inputs = metadata.get("inputs", {})
-        example_data = {}
-
-        for key, info in inputs.items():
-            if "default" in info:
-                example_data[key] = info["default"]
-
-        # Use ensure_ascii=False to allow non-ASCII characters in the JSON output
-        new_content = json.dumps(example_data, indent=2, ensure_ascii=False)
-
-        if example_path.exists() and example_path.read_text(encoding="utf-8").strip() == new_content.strip():
-            self.stdout.write(self.style.NOTICE(f"[=] {component_dir.name}/example.json unchanged"))
-        else:
-            example_path.write_text(new_content + "\n", encoding="utf-8")
-            self.stdout.write(self.style.SUCCESS(f"[✔] {component_dir.name}/example.json updated"))
-
 

@@ -44,7 +44,7 @@ class {context["class_name"]}(BaseComponent):
     @staticmethod
     def _generate_html_template():
         return '''<!--
-TODO: Consider adding {{ attributes.class if attributes.class else '' }} to this HTML element.
+TODO: Consider adding {{ attributes.class|default:'' }} to this HTML element.
 This will allow for more flexible styling by enabling you to dynamically add CSS classes.
 Advantages:
 - Flexibility: Allows frontend developers to customize styling directly from the relevant project's stylesheet, making it easier to adapt the component's appearance to different parts of the application.
@@ -52,7 +52,7 @@ Advantages:
 - Maintainability: Simplifies the maintenance of styling, as changes can be centralized in CSS files instead of being spread across multiple templates.
 
 If you do not need this functionality, feel free to omit it.
-Example: <div class="{{ attributes.class if attributes.class else '' }}">
+Example: <div class="{{ attributes.class|default:'' }}">
 -->
 <div>
   {{ content }}

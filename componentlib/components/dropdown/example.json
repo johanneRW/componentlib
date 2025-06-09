@@ -1,9 +1,8 @@
 {
-  "label": "Vælg kategori",
-  "options": [
-    "Nyhed",
-    "Artikel",
-    "Begivenhed"
-  ],
-  "target_url": "/htmx/dropdown/dropdown_result_view/"
+  "name": "nationality",
+  "label": "Nationality",
+  "options": [["DK", "Danmark"], ["NO", "Norge"], ["SE", "Sverige"]],
+  "target_url": "/htmx/dropdown/dropdown_result_view/",
+  "placeholder": null
+  
 }

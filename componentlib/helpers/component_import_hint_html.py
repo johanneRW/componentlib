@@ -6,7 +6,7 @@ def component_import_hint_html(key):
     class_name = "".join([part.capitalize() for part in key.split("_")])
     base_path = Path(__file__).resolve().parent.parent / "components" / key
 
-    # Read metadata.yaml
+    # Read metadata.yaml (still optional for future use)
     metadata = {}
     meta_path = base_path / "metadata.yaml"
     if meta_path.exists():
@@ -20,29 +20,29 @@ def component_import_hint_html(key):
         with open(example_path, "r", encoding="utf-8") as f:
             example_data = json.load(f)
 
-    # Collect inputs
-    inputs = metadata.get("inputs", {})
+    # Generate blocks based only on example.json keys
     python_kwargs_list = []
     template_kwargs_list = []
     example_blocks = []
 
-    for name in inputs.keys():
-        # Placeholder for initialization
-        placeholder = "..."
-        python_kwargs_list.append(f"{name}={placeholder}")
+    for name, value in example_data.items():
+        python_kwargs_list.append(f"{name}=...")
         template_kwargs_list.append(f"{name}=value")
 
-        # Example data block
-        if name in example_data:
-            value = example_data[name]
+        if value is None:
+            formatted_value = "None"
+        else:
             formatted_value = json.dumps(value, indent=2, ensure_ascii=False)
-            example_blocks.append(f"{name} = {formatted_value}")
+
+        example_blocks.append(f"{name} = {formatted_value}")
+
+
 
     python_kwargs_str = ", ".join(python_kwargs_list)
     template_kwargs_str = " ".join(template_kwargs_list)
     example_block_str = "\n\n".join(example_blocks) if example_blocks else ""
 
-    # Build HTML sections
+    # Build HTML
     html = f"""
 <h3>Django Component (Python)</h3>
 <div class="import-block">
@@ -74,11 +74,9 @@ def component_import_hint_html(key):
     
   </div>
 </div>
-
 """
 
     return {
         "html": html,
         "example_block": example_block_str
     }
-

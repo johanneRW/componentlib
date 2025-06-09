@@ -1,22 +1,21 @@
-# Eksempel Komponent
+## Dropdown
 
-Dette er et **markdown testdokument** for at tjekke, at markdown-rendering virker.
+The `DropdownComponent` is an HTMX-powered `<select>` field designed for use in dynamic forms, without requiring any JavaScript. It allows users to select from a list of options, and automatically triggers an HTTP request to update the interface based on the selected value.
 
-## Funktioner
+### Features
 
-- Understøtter **fed** og *kursiv* tekst
-- Renderer overskrifter (`#`, `##`, `###`, osv.)
-- Viser kodeblokke
+- HTMX integration for dynamic updates on value change
+- Optional `placeholder` field for default unselected state
+- Works without any JavaScript
 
-## Kodeeksempel
 
-```python
-def hello_world():
-    print("Hej, verden!")
-```
+### Inputs
 
-## Tjekliste
+| Name         | Type                  | Required | Description                                                             |
+|--------------|-----------------------|----------|-------------------------------------------------------------------------|
+| `form_fields`| `list`                | ✅        | A list of key-value pairs to be used as dropdown options               |
+| `target_url` | `string`              | ✅        | URL to fetch new content when the value changes                         |
+| `placeholder`| `string` _(optional)_ | ❌        | Text shown as the default unselected value (e.g., `"Select a country"`) |
 
-- [x] Render overskrifter
-- [x] Render lister
-- [x] Render kodeblokke
+If `placeholder` is not provided, the component defaults to a simple `"________"` label.
+

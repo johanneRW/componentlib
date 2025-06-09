@@ -1,23 +1,21 @@
 name: dropdown
 display_name: Dropdown
 class_name: DropdownComponent
-description: HTMX-baseret dropdown-komponent uden JavaScript
-tags: [dropdown, form]
+description: HTMX-based form component with no JavaScript required.
+tags: [form, dropdown]
 inputs:
-  label:
-    type: string
-    required: true
-    default: "Vælg kategori" 
-  options:
+  form_fields:
     type: list
     required: true
-    default: ["Nyhed", "Artikel", "Begivenhed"]
+    description: A list of form field values to populate the dropdown.
+    default: []
   target_url:
     type: string
     required: true
+    description: The endpoint to fetch the result when the dropdown value changes.
     default: "/htmx/dropdown/dropdown_result_view/"
-returns: html 
+returns: html
 component_data:
   author: johanne
-  createdAt: 2025-05-21
-  component_uuid: 8b3de3d2-2437-437a-b511-00b1f5e7b887
+  createdAt: 2025-06-09
+  component_uuid: 45873dd9-58b5-403c-b8a3-133b73d9f26d
