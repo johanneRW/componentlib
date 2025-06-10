@@ -1,0 +1,15 @@
+name: modal
+display_name: Modal
+class_name: ModalComponent
+description: Write a description of the component here.
+tags: []
+inputs:
+  content:
+    type: string
+    required: true
+    default: "Example content"
+returns: html
+component_data:
+  author: johanne
+  createdAt: 2025-06-10
+  component_uuid: af705ba3-d5b3-4d90-a8f8-566c3b288f1f

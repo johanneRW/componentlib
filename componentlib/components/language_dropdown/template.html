@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="d-flex align-items-center ms-4 {{ attributes.class|default:'' }}">
+  <span class="material-icons dark-icon">language</span>
+  <form action="{% url 'set_language' %}" method="post" class="navbar-form navbar-right mx-1 my-2">
+      {% csrf_token %}
+      <div class="form-group">
+          <select name="language" class="form-select language-picker">
+              {% get_language_info_list for LANGUAGES as languages %}
+              {% for language in languages %}
+              <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}selected="selected"{% endif %}>
+                  {{ language.name_local|capfirst }}
+              </option>
+              {% endfor %}
+          </select>
+          <script nonce="{{ request.csp_nonce }}">$("[name=language]").on("change", function () {
+              this.form.submit()
+          })</script>
+      </div>
+  </form>
+</div>

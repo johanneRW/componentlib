@@ -1,0 +1,15 @@
+name: status_badge
+display_name: Status Badge
+class_name: StatusBadgeComponent
+description: ''
+tags: []
+inputs:
+  bg:
+    type: string
+    required: false
+    default: null
+returns: html
+component_data:
+  author: ''
+  createdAt: ''
+  component_uuid: ''
