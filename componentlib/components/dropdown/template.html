@@ -1,16 +1,23 @@
 <div class="c-dropdown {{ attributes.class|default:'' }}">
   <label for="{{ name }}">{{ label }}</label>
-  <select name="{{ name }}" id="{{ name }}"
-          hx-get="{{ target_url }}"
-          hx-trigger="load"
-          hx-target="#{{ name }}"
-          {% if disabled_from %}disabled{% endif %}>
-    {% if placeholder %}
-      <option value="" disabled selected>{{ placeholder }}</option>
-    {% endif %}
-    {% for value, label in options %}
-      <option value="{{ value }}" {% if value == value_from %}selected{% endif %}>{{ label }}</option>
-    {% endfor %}
-  </select>
-</div>
+  <select
+  name="{{ name }}"
+  id="{{ name }}"
+  hx-get="{{ target_url }}"
+  hx-target="#dropdown-result"
+  hx-trigger="change"
+  class="c-dropdown__select {{ attributes.select_class|default:'' }}"
+  {% if disabled %}disabled{% endif %}
+>
+  <option value="" disabled {% if not value %}selected{% endif %}>
+    {{ placeholder|default:"________" }}
+  </option>
 
+  {% for option_value, option_label in options %}
+      <option value="{{ option_value }}" {% if option_value == value %}selected{% endif %}>
+        {{ option_label }}
+      </option>
+  {% endfor %}
+  </select>
+  <div id="dropdown-result" class="c-dropdown__result"></div>
+</div>

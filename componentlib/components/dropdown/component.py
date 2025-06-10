@@ -8,7 +8,3 @@ class DropdownComponent(BaseComponent):
         props = DropdownComponentProps(**kwargs)
         super().__init__(**props.dict())
         self._validated = True
-        
-    def get_context_data(self) -> dict:
-            context = super().get_context_data()
-            return context
