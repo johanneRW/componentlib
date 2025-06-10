@@ -8,4 +8,3 @@ class DropdownComponent(BaseComponent):
         props = DropdownComponentProps(**kwargs)
         super().__init__(**props.dict())
         self._validated = True
-

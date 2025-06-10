@@ -1,4 +1,5 @@
 import json
+import yaml
 from pathlib import Path
 from collections import defaultdict
 from django.core.management.base import BaseCommand
@@ -41,82 +42,75 @@ class Command(BaseCommand):
             self.generate_props_from_example(component_dir, example_data)
 
     def generate_props_from_example(self, component_dir: Path, example_data: dict):
-        from collections import defaultdict
-
         class_name = component_dir.name.title().replace("-", "").replace("_", "") + "ComponentProps"
+        metadata_path = component_dir / "metadata.yaml"
+        metadata = {}
+
+        if metadata_path.exists():
+            with open(metadata_path, "r", encoding="utf-8") as f:
+                metadata = yaml.safe_load(f)
+
+        inputs = metadata.get("inputs", {})
+
         used_types = defaultdict(bool)
+        fields = []
 
-        def infer_type(value):
-            # Handle None
-            if value is None:
-                used_types["Optional"] = True
-                used_types["Any"] = True
-                return "Optional[Any]"
-
-            # Handle strings, numbers, bool
-            if isinstance(value, str):
+        def map_type(meta_type):
+            if meta_type == "string":
                 return "str"
-            if isinstance(value, bool):
+            elif meta_type == "boolean":
                 return "bool"
-            if isinstance(value, int):
-                return "int"
-            if isinstance(value, float):
+            elif meta_type == "number":
                 return "float"
-
-            # Handle list values
-            if isinstance(value, list):
+            elif meta_type == "list":
                 used_types["List"] = True
-
-                # Literal if simple, short list of primitive values
-                if all(isinstance(v, (str, int, float, bool)) for v in value) and len(set(value)) <= 10:
-                    used_types["Literal"] = True
-                    literals = ", ".join(repr(v) for v in sorted(set(value)))
-                    return f"Literal[{literals}]"
-
-                # Tuple[str, str] for list of 2-element lists
-                if all(isinstance(i, list) and len(i) == 2 and all(isinstance(j, str) for j in i) for i in value):
-                    used_types["Tuple"] = True
-                    return "List[Tuple[str, str]]"
-
                 return "List[Any]"
-
-            # Handle dict
-            if isinstance(value, dict):
+            elif meta_type == "dict":
                 used_types["Dict"] = True
                 return "Dict[str, Any]"
+            else:
+                used_types["Any"] = True
+                return "Any"
 
-            # Default fallback
-            used_types["Any"] = True
-            return "Any"
+        for key, config in inputs.items():
+            meta_type = config.get("type", "string")
+            required = config.get("required", False)
+            default = config.get("default", None)
 
-        # Header and imports
+            py_type = map_type(meta_type)
+
+            if not required:
+                used_types["Optional"] = True
+                py_type = f"Optional[{py_type}]"
+
+            if default is None:
+                used_types["Any"] = True
+                default_repr = "None"
+            else:
+                default_repr = repr(default)
+
+            fields.append(f"    {key}: {py_type} = Field({default_repr})")
+
+        # Imports
+        typing_imports = [k for k, v in used_types.items() if v]
+        typing_line = f"from typing import {', '.join(sorted(typing_imports))}" if typing_imports else ""
+
         lines = [
             f'__all__ = ["{class_name}"]\n',
-            "from pydantic import BaseModel, Field"
+            "from pydantic import BaseModel, Field",
         ]
 
-        # Build fields
-        fields = []
-        for key, value in example_data.items():
-            inferred_type = infer_type(value)
-            default_repr = repr(value)
-            fields.append(f"    {key}: {inferred_type} = Field({default_repr})")
+        if typing_line:
+            lines.append(typing_line)
 
-        # Build typing import line dynamically
-        typing_imports = ", ".join(sorted(k for k, v in used_types.items() if v))
-        if typing_imports:
-            lines.append(f"from typing import {typing_imports}\n")
-        else:
-            lines.append("")  # for spacing
-
-        # Class header
+        lines.append("")
         lines.append(f"class {class_name}(BaseModel):")
+
         if fields:
             lines.extend(fields)
         else:
             lines.append("    pass")
 
-        # Write to file
         output_path = component_dir / "props.py"
         new_content = "\n".join(lines) + "\n"
 

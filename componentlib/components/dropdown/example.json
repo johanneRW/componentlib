@@ -1,8 +1,8 @@
 {
   "name": "nationality",
   "label": "Nationality",
-  "options": [["DK", "Danmark"], ["NO", "Norge"], ["SE", "Sverige"]],
-  "target_url": "/htmx/dropdown/dropdown_result_view/",
-  "placeholder": null
-  
+  "options": [["DK", "Denmark"], ["NO", "Norway"]],
+  "value_from": "form.vessel.nationality",
+  "disabled_from": "form.user_is_ship"
 }
+

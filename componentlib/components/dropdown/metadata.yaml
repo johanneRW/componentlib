@@ -4,16 +4,14 @@ class_name: DropdownComponent
 description: HTMX-based form component with no JavaScript required.
 tags: [form, dropdown]
 inputs:
-  form_fields:
-    type: list
-    required: true
-    description: A list of form field values to populate the dropdown.
-    default: []
-  target_url:
+  value_from:
     type: string
-    required: true
-    description: The endpoint to fetch the result when the dropdown value changes.
-    default: "/htmx/dropdown/dropdown_result_view/"
+    required: false
+    description: "Path to use for fetching value from context, e.g. 'form.vessel.nationality'"
+  disabled_from:
+    type: string
+    required: false
+    description: "Boolean expression path like 'form.user_is_ship'"
 returns: html
 component_data:
   author: johanne

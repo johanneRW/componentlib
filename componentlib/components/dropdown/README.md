@@ -1,21 +1,34 @@
-## Dropdown
+# Dropdown
 
-The `DropdownComponent` is an HTMX-powered `<select>` field designed for use in dynamic forms, without requiring any JavaScript. It allows users to select from a list of options, and automatically triggers an HTTP request to update the interface based on the selected value.
+A reusable, dynamic Django component for rendering `<select>` dropdowns with HTMX integration. Designed to be used without JavaScript and configurable through metadata, example data, or form context.
 
-### Features
+## Features
 
-- HTMX integration for dynamic updates on value change
-- Optional `placeholder` field for default unselected state
-- Works without any JavaScript
+- HTMX-enabled form interaction (`hx-get`, `hx-target`, `hx-trigger`)
+- Accepts static or dynamic input values
+- Supports `placeholder` rendering
+- Optional disabling of the dropdown via `disabled` input or form context
+- Values can be injected from context using `value_from` / `disabled_from` references
+- Pydantic-validated input schema
 
+## Supported Inputs
 
-### Inputs
+| Name            | Type     | Required | Description                                                                 |
+|-----------------|----------|----------|-----------------------------------------------------------------------------|
+| `name`          | `str`    | yes      | Name/ID for the dropdown field                                              |
+| `label`         | `str`    | yes      | Label text shown above the select                                           |
+| `options`       | `list`   | yes      | List of 2-tuples: `[["value1", "Label 1"], ["value2", "Label 2"]]`          |
+| `target_url`    | `str`    | yes      | HTMX endpoint to fetch on change                                           |
+| `value`         | `str`    | no       | Selected value. Optional if `value_from` is provided                        |
+| `disabled`      | `bool`   | no       | Disable field. Optional if `disabled_from` is used                         |
+| `placeholder`   | `str`    | no       | Text shown as first disabled `<option>` if provided                         |
+| `value_from`    | `str`    | no       | Context path to inject value, e.g. `"form.vessel.nationality"`             |
+| `disabled_from` | `str`    | no       | Context path to inject boolean for `disabled`, e.g. `"form.user_is_ship"`  |
+| `form`          | `object` | no       | Optional form object from which values may be dynamically resolved         |
+| `attributes`    | `dict`   | no       | Optional dict for injecting extra CSS classes: `{"class": "...", "select_class": "..."}` |
 
-| Name         | Type                  | Required | Description                                                             |
-|--------------|-----------------------|----------|-------------------------------------------------------------------------|
-| `form_fields`| `list`                | ✅        | A list of key-value pairs to be used as dropdown options               |
-| `target_url` | `string`              | ✅        | URL to fetch new content when the value changes                         |
-| `placeholder`| `string` _(optional)_ | ❌        | Text shown as the default unselected value (e.g., `"Select a country"`) |
+If value is not passed directly, it will be resolved from the value_from path.
 
-If `placeholder` is not provided, the component defaults to a simple `"________"` label.
+Same applies to disabled and disabled_from.
 
+You can extend the component by overriding apply_dynamic_fields() in the base class or customizing metadata.yaml.
