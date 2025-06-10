@@ -1,8 +1,13 @@
 {
-  "name": "nationality",
-  "label": "Nationality",
-  "options": [["DK", "Denmark"], ["NO", "Norway"]],
-  "value_from": "form.vessel.nationality",
-  "disabled_from": "form.user_is_ship"
+  "name": "vessel_type",
+  "label": "Vessel Type",
+  "options": [
+    ["FREIGHTER", "Freighter"],
+    ["CRUISE", "Cruise Ship"]
+  ],
+  "target_url": "/htmx/generic-dropdown/",
+  "placeholder": "Select a vessel type",
+  "value_from": null,
+  "disabled_from": false
 }
 
