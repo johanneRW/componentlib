@@ -1,14 +1,8 @@
 name: status_badge
 display_name: Status Badge
 class_name: StatusBadgeComponent
-description: ''
-tags: []
-inputs:
-  bg:
-    type: string
-    required: false
-    default: null
-returns: html
+description: Visual badge that reflects the approval status of a form or object.
+tags: [status, badge]
 component_data:
   author: ''
   createdAt: ''

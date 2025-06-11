@@ -5,7 +5,8 @@ from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-COMPONENTS_DIR = Path(__file__).resolve().parent.parent / "componentlib" / "components"
+# Match folder structure in update_props
+COMPONENTS_DIR = Path(__file__).resolve().parent.parent / "components"
 
 # Cooldown tracker per component
 last_run = {}
@@ -28,15 +29,16 @@ class ComponentChangeHandler(FileSystemEventHandler):
 
         changed_path = Path(event.src_path)
 
-        if changed_path.name not in ["metadata.yaml", "component.py"]:
-            return  # Only react to specific files
+        # Only trigger for files relevant to prop generation
+        if changed_path.name not in ["example.json", "template.html"]:
+            return
 
-        # Find the nearest component folder
-        component_dir = changed_path.parent
-        while component_dir.parent != COMPONENTS_DIR and component_dir != COMPONENTS_DIR:
-            component_dir = component_dir.parent
-
-        component_name = component_dir.name
+        # Resolve component folder relative to COMPONENTS_DIR
+        try:
+            relative_path = changed_path.relative_to(COMPONENTS_DIR)
+            component_name = relative_path.parts[0]
+        except ValueError:
+            return  # File not inside a valid component
 
         if not should_run(component_name):
             print(f"[SKIP] Change throttled for: {component_name}")
@@ -46,17 +48,17 @@ class ComponentChangeHandler(FileSystemEventHandler):
 
         try:
             subprocess.run(
-                [sys.executable, "manage.py", "generate_component_model", component_name],
+                [sys.executable, "manage.py", "update_props", component_name],
                 check=True
             )
-            print(f"[OK] Regenerated model for {component_name}")
+            print(f"[OK] Updated props for {component_name}")
         except subprocess.CalledProcessError as e:
-            print(f"[ERROR] Failed to generate model for {component_name}")
+            print(f"[ERROR] Failed to update props for {component_name}")
             print(e)
 
 
 def main():
-    print("[WATCH] Watching component metadata and logic... (Ctrl+C to stop)")
+    print("[WATCH] Watching example.json and template.html in components... (Ctrl+C to stop)")
     event_handler = ComponentChangeHandler()
     observer = Observer()
     observer.schedule(event_handler, str(COMPONENTS_DIR), recursive=True)

@@ -3,9 +3,9 @@ from django.http import HttpResponse, HttpResponseNotFound
 from pathlib import Path
 from django.utils.html import escape
 from componentlib.helpers.registry import load_all_components_metadata
-from componentlib.helpers.preview import render_component_preview
+from componentlib.helpers.preview import render_component_preview, load_and_render_components
 from componentlib.helpers.filters import filter_by_tech, filter_by_tags, search_and_sort_components
-from componentlib.helpers.component_utils import load_and_render_components, collect_tags_and_tech, get_code_files, read_files
+from componentlib.helpers.component_utils import collect_tags_and_tech, get_code_files, read_files
 from componentlib.helpers.component_import_hint_html import component_import_hint_html
 
 def redirect_to_components(request):
@@ -22,6 +22,8 @@ def component_browser(request):
 
     # Load and render all components
     all_components = load_and_render_components()
+    all_components = sorted(all_components, key=lambda c: c.get("name", "").lower())
+
 
     # Apply technology filter
     tech_filtered_components = filter_by_tech(all_components, selected_tech)
@@ -31,6 +33,9 @@ def component_browser(request):
 
     # Apply search filter on the already filtered components
     matched_components = search_and_sort_components(tag_filtered_components, q)
+    # Sort alphabetically by component name
+    matched_components = sorted(matched_components, key=lambda c: c.get("name", "").lower())
+
 
     # Collect all tags and technologies for the UI
     all_tags, all_tech = collect_tags_and_tech(all_components)

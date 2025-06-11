@@ -5,43 +5,49 @@
 │   ├── components
 │   │   ├── base.py
 │   │   ├── dropdown
-│   │   │   ├── component.py
-│   │   │   ├── example.json
-│   │   │   ├── __init__.py
-│   │   │   ├── metadata.yaml
-│   │   │   ├── props.py
-│   │   │   ├── README.md
-│   │   │   ├── template.html
-│   │   │   └── view.py
-│   │   ├── formset_table
-│   │   │   ├── component.py
-│   │   │   ├── example.html
 │   │   │   ├── example.json
 │   │   │   ├── __init__.py
 │   │   │   ├── metadata.yaml
 │   │   │   ├── props.py
 │   │   │   ├── README.md
 │   │   │   └── template.html
-│   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   ├── language_dropdown
+│   │   │   ├── __init__.py
+│   │   │   ├── metadata.yaml
+│   │   │   ├── props.py
+│   │   │   ├── README.md
+│   │   │   └── template.html
+│   │   ├── modal
+│   │   │   ├── __init__.py
+│   │   │   ├── metadata.yaml
+│   │   │   ├── props.py
+│   │   │   ├── README.md
+│   │   │   └── template.html
+│   │   └── status_badge
+│   │       ├── component.py
+│   │       ├── example.json
+│   │       ├── __init__.py
+│   │       ├── metadata.yaml
+│   │       ├── props.py
+│   │       ├── README.md
+│   │       └── template.html
 │   ├── helpers
 │   │   ├── case_utils.py
-│   │   ├── codegen.py
 │   │   ├── component_import_hint_html.py
-│   │   ├── component_loader.py
 │   │   ├── component_utils.py
 │   │   ├── filters.py
 │   │   ├── htmx_detect.py
 │   │   ├── __init__.py
 │   │   ├── preview.py
 │   │   ├── registry.py
-│   │   ├── render.py
 │   │   └── template_generator.py
 │   ├── __init__.py
 │   ├── management
 │   │   ├── commands
 │   │   │   ├── create_component.py
-│   │   │   ├── generate_component_model.py
-│   │   │   └── __init__.py
+│   │   │   ├── __init__.py
+│   │   │   └── update_props.py
 │   │   └── __init__.py
 │   ├── migrations
 │   │   └── __init__.py
@@ -97,7 +103,6 @@
 │   │   │   └── results_partial.html
 │   │   └── __init__.py
 │   ├── templatetags
-│   │   ├── component_tags.py
 │   │   ├── custom_filters.py
 │   │   └── __init__.py
 │   ├── tests.py
@@ -128,4 +133,4 @@
 │   └── watch_components.py
 └── struktur.txt
 
-21 directories, 107 files
+23 directories, 110 files

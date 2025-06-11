@@ -1,14 +1,8 @@
 name: modal
 display_name: Modal
 class_name: ModalComponent
-description: Write a description of the component here.
-tags: []
-inputs:
-  content:
-    type: string
-    required: true
-    default: "Example content"
-returns: html
+description: Static modal container layout for reusable dialogs and overlays.
+tags: [modal, dialog, popup]
 component_data:
   author: johanne
   createdAt: 2025-06-10

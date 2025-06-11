@@ -44,7 +44,7 @@ class {context["class_name"]}(BaseComponent):
     @staticmethod
     def _generate_html_template():
         return '''<!--
-TODO: Consider adding {{ attributes.class|default:'' }} to this HTML element.
+NOTE: Consider adding {{ attributes.class|default:'' }} to this HTML element.
 This will allow for more flexible styling by enabling you to dynamically add CSS classes.
 Advantages:
 - Flexibility: Allows frontend developers to customize styling directly from the relevant project's stylesheet, making it easier to adapt the component's appearance to different parts of the application.
@@ -68,15 +68,11 @@ Example: <div class="{{ attributes.class|default:'' }}">
 
     @staticmethod
     def _generate_metadata_yaml(context):
-        metadata_inputs_block = "  content:\n    type: string\n    required: true\n    default: \"Example content\""
         return f'''name: {context["component_name"]}
 display_name: {context["display_name"]}
 class_name: {context["class_name"]}
 description: Write a description of the component here.
 tags: []
-inputs:
-{metadata_inputs_block}
-returns: html
 component_data:
   author: {context["author"]}
   createdAt: {context["created_at"]}
@@ -86,11 +82,16 @@ component_data:
     @staticmethod
     def _generate_props_py(context):
         props_lines = [
+            "# NOTE: This file is auto-generated.",
+            "# To update it, run: `python manage.py update_props <component_name>`",
+            "# The generation is based on templates and example.json.",
+            "# Please verify that all fields are correctly merged and that required/optional fields match the specification.\n",
             "from pydantic import BaseModel, Field\n",
             f"class {context['class_name']}Props(BaseModel):",
             "    content: str = Field(\"Example content\")"
         ]
         return "\n".join(props_lines) + "\n"
+
 
     @staticmethod
     def _generate_readme(context):

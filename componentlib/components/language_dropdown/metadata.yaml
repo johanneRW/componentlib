@@ -1,8 +1,8 @@
 name: language_dropdown
 display_name: Language Dropdown
 class_name: LanguageDropdownComponent
-description: Write a description of the component here.
-tags: []
+description: Language selector dropdown that submits on change to update the site's active language.
+tags: [i18n, dropdown]
 inputs:
   content:
     type: string

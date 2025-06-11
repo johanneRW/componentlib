@@ -1,14 +1,19 @@
 <a href="{% url 'component_detail' key=comp.key %}" class="component-card-link">
   <article class="component-card" id="comp-{{ comp.key }}">
     <div class="component-header">
-      <h2>{{ comp.display_name }} <small class="import-hint">→ <code>{{ comp.class_name }}</code></small></h2>
+      <h2>
+        {{ comp.display_name }}
+        {% if comp.class_name %}
+          <small class="import-hint">→ <code>{{ comp.class_name }}</code></small>
+        {% endif %}
+      </h2>
     </div>
+
     {% include "component_browser/fragments/tags.html" with tags=comp.tags %}
     {% load custom_filters %}
 
-<div class="file-status">
-  {% include "component_browser/fragments/component_tech.html" with comp=comp %}
-
-</div>
+    <div class="file-status">
+      {% include "component_browser/fragments/component_tech.html" with comp=comp %}
+    </div>
   </article>
 </a>

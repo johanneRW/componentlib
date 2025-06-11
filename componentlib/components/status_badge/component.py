@@ -1,4 +1,4 @@
-from ..base import BaseComponent
+from componentlib.components.base import BaseComponent
 from .props import StatusBadgeComponentProps
 
 class StatusBadgeComponent(BaseComponent):

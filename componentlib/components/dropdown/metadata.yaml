@@ -3,16 +3,6 @@ display_name: Dropdown
 class_name: DropdownComponent
 description: HTMX-based form component with no JavaScript required.
 tags: [form, dropdown]
-inputs:
-  value_from:
-    type: string
-    required: false
-    description: "Path to use for fetching value from context, e.g. 'form.vessel.nationality'"
-  disabled_from:
-    type: string
-    required: false
-    description: "Boolean expression path like 'form.user_is_ship'"
-returns: html
 component_data:
   author: johanne
   createdAt: 2025-06-09

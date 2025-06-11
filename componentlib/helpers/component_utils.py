@@ -1,11 +1,4 @@
 from componentlib.helpers.registry import load_all_components_metadata as registry_load_all_components_metadata
-from componentlib.helpers.preview import render_component_preview as renderer_render_component_preview
-
-def load_and_render_components():
-    all_components = registry_load_all_components_metadata()
-    for c in all_components:
-        c["rendered"] = renderer_render_component_preview(c["key"])
-    return all_components
 
 
 def collect_tags_and_tech(components):

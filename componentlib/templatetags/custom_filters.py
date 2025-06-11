@@ -10,3 +10,8 @@ def exclude(value, item):
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key, "")
+
+
+@register.filter
+def tech_options(tech_list):
+    return [[t, t.capitalize()] for t in tech_list]
