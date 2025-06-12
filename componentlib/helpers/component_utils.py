@@ -1,6 +1,3 @@
-from componentlib.helpers.registry import load_all_components_metadata as registry_load_all_components_metadata
-
-
 def collect_tags_and_tech(components):
     tag_set = set()
     tech_set = set()

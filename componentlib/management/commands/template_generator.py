@@ -3,30 +3,30 @@ import json
 class TemplateGenerator:
     @staticmethod
     def generate_templates(context, include_py, include_html, include_readme):
-        TEMPLATE_FILES = {}
+        template_files = {}
 
         # Python component
         if include_py:
-            TEMPLATE_FILES["component.py"] = TemplateGenerator._generate_py_template(context)
+            template_files["component.py"] = TemplateGenerator._generate_py_template(context)
 
         # HTML template
         if include_html:
-            TEMPLATE_FILES["template.html"] = TemplateGenerator._generate_html_template()
+            template_files["template.html"] = TemplateGenerator._generate_html_template()
 
         # Example data
-        TEMPLATE_FILES["example.json"] = TemplateGenerator._generate_example_json()
+        template_files["example.json"] = TemplateGenerator._generate_example_json()
 
         # metadata.yaml
-        TEMPLATE_FILES["metadata.yaml"] = TemplateGenerator._generate_metadata_yaml(context)
+        template_files["metadata.yaml"] = TemplateGenerator._generate_metadata_yaml(context)
 
         # props.py
-        TEMPLATE_FILES["props.py"] = TemplateGenerator._generate_props_py(context)
+        template_files["props.py"] = TemplateGenerator._generate_props_py(context)
 
         # README
         if include_readme:
-            TEMPLATE_FILES["README.md"] = TemplateGenerator._generate_readme(context)
+            template_files["README.md"] = TemplateGenerator._generate_readme(context)
 
-        return TEMPLATE_FILES
+        return template_files
 
     @staticmethod
     def _generate_py_template(context):
@@ -73,6 +73,7 @@ display_name: {context["display_name"]}
 class_name: {context["class_name"]}
 description: Write a description of the component here.
 tags: []
+import_hint_type: default
 component_data:
   author: {context["author"]}
   createdAt: {context["created_at"]}

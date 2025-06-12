@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <a href="{% url 'component_detail' key=comp.key %}" class="component-card-link">
   <article class="component-card" id="comp-{{ comp.key }}">
     <div class="component-header">
@@ -8,12 +9,9 @@
         {% endif %}
       </h2>
     </div>
-
-    {% include "component_browser/fragments/tags.html" with tags=comp.tags %}
-    {% load custom_filters %}
-
+    {% include "component_browser/includes/tags/tags.html" with tags=comp.tags %}
     <div class="file-status">
-      {% include "component_browser/fragments/component_tech.html" with comp=comp %}
+      {% include "component_browser/includes/detail/component_tech.html" with comp=comp %}
     </div>
   </article>
 </a>

@@ -8,10 +8,10 @@
       {% endif %}
   </div>
 
-  {% if component.example_data_block %}
+  {% if example_data %}
       <div class="example-data">
           <h3>Example Data</h3>
-          <pre><code id="example-data-{{ component.key }}">{{ component.example_data_block }}</code></pre>
+          <pre><code id="example-data-{{ component.key }}">{{ example_data }}</code></pre>
           <button class="copy-btn"
                     hx-get="/dummy-endpoint"
                     hx-trigger="click"

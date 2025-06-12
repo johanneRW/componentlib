@@ -3,6 +3,7 @@ display_name: Dropdown
 class_name: DropdownComponent
 description: HTMX-based form component with no JavaScript required.
 tags: [form, dropdown]
+import_hint_type: template_with_vars
 component_data:
   author: johanne
   createdAt: 2025-06-09

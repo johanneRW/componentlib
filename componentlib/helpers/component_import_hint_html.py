@@ -1,26 +1,21 @@
-import importlib
-import inspect
 import json
+import yaml
+from textwrap import dedent
 from pathlib import Path
+from django.template.loader import render_to_string
 
-def detect_render_mode(key) -> str:
-    module_path = f"componentlib.components.{key}.component"
-    class_name = "".join([part.capitalize() for part in key.split("_")]) + "Component"
 
-    try:
-        module = importlib.import_module(module_path)
-        component_cls = getattr(module, class_name)
+def load_component_metadata(key) -> dict:
+    base_path = Path(__file__).resolve().parent.parent / "components" / key
+    metadata_path = base_path / "metadata.yaml"
+    with open(metadata_path) as metadata:
+        return yaml.load(metadata, yaml.Loader)
 
-        if hasattr(component_cls, "get_context_data"):
-            source = inspect.getsource(component_cls.get_context_data)
-            if "return super().get_context_data()" in source:
-                return "include"
-            elif "return {" in source:
-                return "inline"
-    except Exception as e:
-        print(f"[WARN] Could not analyse component '{key}': {e}")
 
-    return "include"
+def get_import_hint_type(key) -> str:
+    metadata = load_component_metadata(key)
+    return metadata.get("import_hint_type", "")
+
 
 def detect_static_include_mode(key) -> bool:
     base_path = Path(__file__).resolve().parent.parent / "components" / key
@@ -36,6 +31,7 @@ def detect_static_include_mode(key) -> bool:
             return True
 
     return False
+
 
 def detect_unused_props_in_template(key) -> bool:
     base_path = Path(__file__).resolve().parent.parent / "components" / key
@@ -55,8 +51,9 @@ def detect_unused_props_in_template(key) -> bool:
 
         return True
     except Exception as e:
-        print(f"[WARN] Failed to analyze template for {key}: {e}")
+        #print(f"[WARN] Failed to analyze template for {key}: {e}")
         return False
+
 
 def load_example_data(key):
     base_path = Path(__file__).resolve().parent.parent / "components" / key
@@ -67,103 +64,122 @@ def load_example_data(key):
             if content:
                 return json.loads(content)
         except json.JSONDecodeError as e:
-            print(f"[WARN] Invalid JSON in '{example_path}': {e}")
+            #print(f"[WARN] Invalid JSON in '{example_path}': {e}")
+            pass
     return {}
 
+
 def create_html_block(code_id, code_content, button_label):
-    return f"""
-<div class="import-block">
-  <div class="code-and-button">
-    <pre><code id="{code_id}">{code_content}</code></pre>
-    <button class="copy-btn"
-            hx-get="/dummy-endpoint"
-            hx-trigger="click"
-            data-code-id="{code_id}">
-        <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy"> {button_label}
-    </button>
-  </div>
-</div>
-"""
+    return render_to_string(
+        "component_browser/import_hints/import_block.html",
+        context={
+            "code_id": code_id,
+            "code_content": code_content,
+            "button_label": button_label,
+        }
+    )
 
-def component_import_hint_html(key):
-    class_name = "".join([part.capitalize() for part in key.split("_")])
-    base_path = Path(__file__).resolve().parent.parent / "components" / key
+
+def get_component_import_hint(key):
+    import_hint_type = get_import_hint_type(key)
+
+    if import_hint_type == "template_only":
+        html = get_hint_template_only(key)
+    elif import_hint_type == "template_with_vars":
+        html = get_hint_template_with_vars(key)
+    elif import_hint_type == "inline":
+        html = get_hint_inline(key)
+    else:
+        html = get_hint_fallback(key)
+
+    return html
+
+
+def get_component_example_data(key) -> str:
     example_data = load_example_data(key)
-    render_mode = detect_render_mode(key)
-
     example_blocks = [
         f"{name} = {json.dumps(value, indent=2, ensure_ascii=False) if value is not None else 'None'}"
         for name, value in example_data.items()
     ]
     example_block_str = "\n\n".join(example_blocks) if example_blocks else ""
+    return example_block_str
 
-    component_path = base_path / "component.py"
-    template_path = base_path / "template.html"
-    example_path = base_path / "example.json"
 
-    if detect_static_include_mode(key) or detect_unused_props_in_template(key):
-        html_content = create_html_block(
-            f"django-template-{key}",
-            f"{{% include \"components/{key}/template.html\" %}}",
-            "Copy Include Snippet"
-        )
-        return {"html": f"<h3>Django Template Only</h3>{html_content}", "example_block": example_block_str}
+def get_class_name(key) -> str:
+    class_name = "".join([part.capitalize() for part in key.split("_")])
+    return class_name
 
-    elif not component_path.exists() and template_path.exists() and example_path.exists():
-        python_kwargs_list = [f"{name}=..." for name in example_data]
-        template_kwargs_list = [f"{name}=value" for name in example_data]
-        template_kwargs_str = " ".join(template_kwargs_list)
 
-        django_template_html = create_html_block(
-            f"django-template-{key}",
-            f"{{% include \"components/{key}/template.html\" with {template_kwargs_str} %}}",
-            "Copy Django Template"
-        )
-        html = f"""
-<h3>Django Component (Template)</h3>
-{django_template_html}
-"""
-        return {"html": html, "example_block": example_block_str}
+def get_hint_template_only(key) -> str:
+    html_content = create_html_block(
+        f"django-template-{key}",
+        f"{{% include \"components/{key}/template.html\" %}}",
+        "Copy Include Snippet"
+    )
+    html = f"<h3>Django Template Only</h3>{html_content}"
+    return html
 
-    elif render_mode == "inline":
-        python_expression = f'{class_name}Component(form=self.form).render()'
-        django_init_html = create_html_block(
-            f"django-init-{key}",
-            f"from componentlib.components.{key}.component import {class_name}Component\n\n# Initialization:\n{python_expression}",
-            "Copy Django Initialization"
-        )
-        django_template_html = create_html_block(
-            f"django-template-{key}",
-            f"{{{{ {key}|safe }}}}",
-            "Copy Django Template"
-        )
-        html = f"""
-<h3>Django Component (Python)</h3>
-{django_init_html}
-<h3>Django Component (Template)</h3>
-{django_template_html}
-"""
-    else:
-        python_kwargs_list = [f"{name}=..." for name in example_data]
-        template_kwargs_list = [f"{name}=value" for name in example_data]
-        python_kwargs_str = ", ".join(python_kwargs_list)
-        template_kwargs_str = " ".join(template_kwargs_list)
 
-        django_init_html = create_html_block(
-            f"django-init-{key}",
-            f"from componentlib.components.{key}.component import {class_name}Component\n\n# Initialization:\n{class_name}Component({python_kwargs_str})",
-            "Copy Django Initialization"
-        )
-        django_template_html = create_html_block(
-            f"django-template-{key}",
-            f"{{% include \"components/{key}/template.html\" with {template_kwargs_str} %}}",
-            "Copy Django Template"
-        )
-        html = f"""
-<h3>Django Component (Python)</h3>
-{django_init_html}
-<h3>Django Component (Template)</h3>
-{django_template_html}
-"""
+def get_hint_template_with_vars(key) -> str:
+    example_data = load_example_data(key)
+    template_kwargs_list = [f"{name}=value" for name in example_data]
+    template_kwargs_str = " ".join(template_kwargs_list)
+    django_template_html = create_html_block(
+        f"django-template-{key}",
+        f"{{% include \"components/{key}/template.html\" with {template_kwargs_str} %}}",
+        "Copy Django Template"
+    )
+    html = f"<h3>Django Component (Template)</h3>{django_template_html}"
+    return html
 
-    return {"html": html, "example_block": example_block_str}
+
+def get_hint_inline(key) -> str:
+    class_name = get_class_name(key)
+    python_expression = f'{class_name}Component(form=self.form).render()'
+    django_init_html = create_html_block(
+        f"django-init-{key}",
+        f"from componentlib.components.{key}.component import {class_name}Component\n\n# Initialization:\n{python_expression}",
+        "Copy Django Initialization"
+    )
+    django_template_html = create_html_block(
+        f"django-template-{key}",
+        f"{{{{ {key}|safe }}}}",
+        "Copy Django Template"
+    )
+    html = dedent(
+        f"""
+        <h3>Django Component (Python)</h3>
+        {django_init_html}
+        <h3>Django Component (Template)</h3>
+        {django_template_html}
+        """
+    )
+    return html
+
+
+def get_hint_fallback(key) -> str:
+    class_name = get_class_name(key)
+    example_data = load_example_data(key)
+    python_kwargs_list = [f"{name}=..." for name in example_data]
+    template_kwargs_list = [f"{name}=value" for name in example_data]
+    python_kwargs_str = ", ".join(python_kwargs_list)
+    template_kwargs_str = " ".join(template_kwargs_list)
+    django_init_html = create_html_block(
+        f"django-init-{key}",
+        f"from componentlib.components.{key}.component import {class_name}Component\n\n# Initialization:\n{class_name}Component({python_kwargs_str})",
+        "Copy Django Initialization"
+    )
+    django_template_html = create_html_block(
+        f"django-template-{key}",
+        f"{{% include \"components/{key}/template.html\" with {template_kwargs_str} %}}",
+        "Copy Django Template"
+    )
+    html = dedent(
+        f"""
+        <h3>Django Component (Python)</h3>
+        {django_init_html}
+        <h3>Django Component (Template)</h3>
+        {django_template_html}
+        """
+    )
+    return html

@@ -8,7 +8,7 @@ from django.test.client import RequestFactory
 from django.conf import settings
 from django.utils.translation import get_language
 
-from componentlib.helpers.component_utils import registry_load_all_components_metadata
+from componentlib.helpers.registry import load_all_components
 
 
 def render_component_preview(component_key: str) -> str:
@@ -72,7 +72,7 @@ def render_component_preview(component_key: str) -> str:
 
 
 def load_and_render_components():
-    all_components = registry_load_all_components_metadata()
+    all_components = load_all_components()
     for c in all_components:
         c["rendered"] = render_component_preview(c["key"])
     return all_components

@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
-from pathlib import Path
 from django.utils.html import escape
-from componentlib.helpers.registry import load_all_components_metadata
+from pathlib import Path
+from componentlib.helpers.registry import load_all_components
 from componentlib.helpers.preview import render_component_preview, load_and_render_components
 from componentlib.helpers.filters import filter_by_tech, filter_by_tags, search_and_sort_components
-from componentlib.helpers.component_utils import collect_tags_and_tech, get_code_files, read_files
-from componentlib.helpers.component_import_hint_html import component_import_hint_html
+from componentlib.helpers.component_utils import collect_tags_and_tech, get_code_files
+from componentlib.helpers.component_import_hint_html import get_component_import_hint, get_component_example_data
+
 
 def redirect_to_components(request):
     return redirect("component_browser")
@@ -24,7 +25,6 @@ def component_browser(request):
     all_components = load_and_render_components()
     all_components = sorted(all_components, key=lambda c: c.get("name", "").lower())
 
-
     # Apply technology filter
     tech_filtered_components = filter_by_tech(all_components, selected_tech)
 
@@ -33,9 +33,9 @@ def component_browser(request):
 
     # Apply search filter on the already filtered components
     matched_components = search_and_sort_components(tag_filtered_components, q)
+    
     # Sort alphabetically by component name
     matched_components = sorted(matched_components, key=lambda c: c.get("name", "").lower())
-
 
     # Collect all tags and technologies for the UI
     all_tags, all_tech = collect_tags_and_tech(all_components)
@@ -54,7 +54,7 @@ def component_browser(request):
 
     # Render the appropriate template based on the request type
     if request.headers.get("Hx-Request") == "true":
-        return render(request, "component_browser/results_partial.html", context)
+        return render(request, "component_browser/includes/results_partial.html", context)
     else:
         return render(request, "component_browser/index.html", context)
 
@@ -64,24 +64,22 @@ def component_detail(request, key):
 
     code_files = get_code_files(base_path)
 
-    components = sorted(load_all_components_metadata(), key=lambda c: c["name"].lower())
-    index = next((i for i, c in enumerate(components) if c["key"] == key), None)
+    components = sorted(load_all_components(), key=lambda c: c["name"].lower())
+
+    # Find the current component's index
+    index = next((index for index, component in enumerate(components) if component["key"] == key), None)
 
     if index is None:
         return render(request, "404.html", status=404)
 
-    component = components[index]
-    component["key"] = key
-    component["rendered"] = render_component_preview(key)
-    hint_data = component_import_hint_html(component['key'])
-    component['import_hint'] = hint_data['html']
-    component['example_data_block'] = hint_data['example_block']
+    curr_component = components[index]
+    prev_component = components[index - 1] if index > 0 else None
+    next_component = components[index + 1] if index < len(components) - 1 else None
 
-    file_names = ["template.html", "component.py", "metadata.yaml", "example.json", "README.md"]
-    files = read_files(base_path, file_names)
-
-    previous = components[index - 1] if index > 0 else None
-    next_comp = components[index + 1] if index < len(components) - 1 else None
+    curr_component["key"] = key
+    curr_component["rendered"] = render_component_preview(key)
+    import_hint = get_component_import_hint(key)
+    example_data = get_component_example_data(key)
 
     tech_list = [
         {'name': 'django', 'icon': 'django.svg', 'alt': 'Django', 'label': 'Django'},
@@ -96,9 +94,11 @@ def component_detail(request, key):
     ]
 
     return render(request, "component_browser/component_detail.html", {
-        "component": component,
-        "previous": previous,
-        "next": next_comp,
+        "component": curr_component,
+        "previous": prev_component,
+        "next": next_component,
+        "import_hint": import_hint,
+        "example_data": example_data,
         "code_files": code_files,
         "tech_list": tech_list,
         "doc_list": doc_list,
@@ -119,6 +119,7 @@ def component_code(request, key):
     elif filename == "props":
         file_path = base_path / "props.py"
     elif filename == "readme":
+        # Look for all variants of filename ("README.md", "readme.md", "README.MD")
         file_path = None
         for fname in base_path.iterdir():
             if fname.name.lower() == "readme.md":

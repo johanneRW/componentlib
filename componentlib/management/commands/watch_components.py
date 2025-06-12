@@ -1,12 +1,13 @@
 import time
 import sys
 import subprocess
+from django.core.management.base import BaseCommand
 from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # Match folder structure in update_props
-COMPONENTS_DIR = Path(__file__).resolve().parent.parent / "components"
+COMPONENTS_DIR = Path(__file__).resolve().parent.parent.parent / "components"
 
 # Cooldown tracker per component
 last_run = {}
@@ -55,6 +56,13 @@ class ComponentChangeHandler(FileSystemEventHandler):
         except subprocess.CalledProcessError as e:
             print(f"[ERROR] Failed to update props for {component_name}")
             print(e)
+
+
+class Command(BaseCommand):
+    help = "Watch components for changes and update props.py if they change"
+    
+    def handle(self, *args, **options):
+        main()
 
 
 def main():

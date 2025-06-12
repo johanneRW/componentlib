@@ -8,7 +8,7 @@ from .htmx_detect import detect_component_capabilities
 # Internal storage for registered component classes
 _component_classes = {}
 
-def load_all_components_metadata():
+def load_all_components():
     base_path = Path(__file__).resolve().parent.parent / "components"
     components = []
 

@@ -1,0 +1,12 @@
+<div class="import-block">
+    <div class="code-and-button">
+      <pre><code id="{{ code_id }}">{{ code_content }}</code></pre>
+      <button class="copy-btn"
+              hx-get="/dummy-endpoint"
+              hx-trigger="click"
+              data-code-id="{{ code_id }}">
+          <img class="copy-icon" src="/static/icons/copy.svg" alt="Copy">
+          {{ button_label }}
+      </button>
+    </div>
+</div>

@@ -7,7 +7,7 @@
       {% endif %}
     </h1>
     <div class="tags-container">
-      {% include "component_browser/fragments/tags_links.html" with tags=component.tags %}
+      {% include "component_browser/includes/tags/tags_links.html" with tags=component.tags %}
     </div>
   </div>
 </header>
@@ -15,10 +15,10 @@
 {% if component.exists %}
   <div class="file-status-container">
     <div class="file-status">
-      {% include "component_browser/fragments/component_tech.html" with comp=component %}
+      {% include "component_browser/includes/detail/component_tech.html" with comp=component %}
     </div>
     <div class="file-status">
-      {% include "component_browser/fragments/component_docs.html" with comp=component %}
+      {% include "component_browser/includes/detail/component_docs.html" with comp=component %}
     </div>
   </div>
 {% endif %}

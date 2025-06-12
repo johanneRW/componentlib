@@ -16,29 +16,10 @@ class BaseComponent:
 
         # Warn if props are not used
         if not getattr(self, "_validated", False):
-            print(f"[WARNING] {self.__class__.__name__} input not validated via Props model.")
+            #print(f"[WARNING] {self.__class__.__name__} input not validated via Props model.")
+            pass
 
-    # def resolve_path(self, context, dotted_path: str):
-    #     try:
-    #         for part in dotted_path.split("."):
-    #             context = getattr(context, part, None)
-    #         return context
-    #     except Exception:
-    #         return None
 
-    # def apply_dynamic_fields(self):
-    #     """
-    #     Check for fields like value_from / disabled_from, etc.,
-    #     and insert them into the context if they are missing.
-    #     """
-    #     form = self.context.get("form") or self.context.get("context")
-
-    #     for key in list(self.context.keys()):
-    #         if key.endswith("_from") and isinstance(self.context[key], str):
-    #             target_key = key.replace("_from", "")
-    #             if target_key not in self.context:
-    #                 path = self.context[key]
-    #                 self.context[target_key] = self.resolve_path(form, path)
 
     def get_context_data(self) -> dict:
         return self.context

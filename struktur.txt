@@ -40,14 +40,15 @@
 │   │   ├── htmx_detect.py
 │   │   ├── __init__.py
 │   │   ├── preview.py
-│   │   ├── registry.py
-│   │   └── template_generator.py
+│   │   └── registry.py
 │   ├── __init__.py
 │   ├── management
 │   │   ├── commands
 │   │   │   ├── create_component.py
 │   │   │   ├── __init__.py
-│   │   │   └── update_props.py
+│   │   │   ├── template_generator.py
+│   │   │   ├── update_props.py
+│   │   │   └── watch_components.py
 │   │   └── __init__.py
 │   ├── migrations
 │   │   └── __init__.py
@@ -80,27 +81,32 @@
 │   ├── templates
 │   │   ├── component_browser
 │   │   │   ├── component_detail.html
-│   │   │   ├── fragments
-│   │   │   │   ├── active_tags.html
+│   │   │   ├── import_hints
+│   │   │   │   └── import_block.html
+│   │   │   ├── includes
 │   │   │   │   ├── alphabetical_list.html
-│   │   │   │   ├── code_files.html
 │   │   │   │   ├── component_card.html
-│   │   │   │   ├── component_docs.html
-│   │   │   │   ├── component_header.html
-│   │   │   │   ├── component_tech.html
-│   │   │   │   ├── description.html
-│   │   │   │   ├── example.html
+│   │   │   │   ├── detail
+│   │   │   │   │   ├── code_files.html
+│   │   │   │   │   ├── component_docs.html
+│   │   │   │   │   ├── component_header.html
+│   │   │   │   │   ├── component_tech.html
+│   │   │   │   │   ├── description.html
+│   │   │   │   │   ├── example.html
+│   │   │   │   │   ├── header.html
+│   │   │   │   │   ├── import_guide.html
+│   │   │   │   │   └── navigation.html
 │   │   │   │   ├── filtered_results.html
-│   │   │   │   ├── header.html
-│   │   │   │   ├── import_guide.html
-│   │   │   │   ├── navigation.html
-│   │   │   │   ├── search_form.html
-│   │   │   │   ├── tag_filter.html
-│   │   │   │   ├── tags.html
-│   │   │   │   ├── tags_links.html
-│   │   │   │   └── tech_dropdown.html
-│   │   │   ├── index.html
-│   │   │   └── results_partial.html
+│   │   │   │   ├── results_partial.html
+│   │   │   │   ├── search
+│   │   │   │   │   ├── search_form.html
+│   │   │   │   │   └── tech_dropdown.html
+│   │   │   │   └── tags
+│   │   │   │       ├── active_tags.html
+│   │   │   │       ├── tag_filter.html
+│   │   │   │       ├── tags.html
+│   │   │   │       └── tags_links.html
+│   │   │   └── index.html
 │   │   └── __init__.py
 │   ├── templatetags
 │   │   ├── custom_filters.py
@@ -130,7 +136,6 @@
 ├── README.md
 ├── requirements.txt
 ├── scripts
-│   └── watch_components.py
 └── struktur.txt
 
-23 directories, 110 files
+27 directories, 111 files

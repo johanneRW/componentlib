@@ -3,6 +3,7 @@ display_name: Language Dropdown
 class_name: LanguageDropdownComponent
 description: Language selector dropdown that submits on change to update the site's active language.
 tags: [i18n, dropdown]
+import_hint_type: template_only
 inputs:
   content:
     type: string

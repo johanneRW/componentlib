@@ -3,6 +3,7 @@ display_name: Modal
 class_name: ModalComponent
 description: Static modal container layout for reusable dialogs and overlays.
 tags: [modal, dialog, popup]
+import_hint_type: template_only
 component_data:
   author: johanne
   createdAt: 2025-06-10

@@ -3,6 +3,7 @@ display_name: Status Badge
 class_name: StatusBadgeComponent
 description: Visual badge that reflects the approval status of a form or object.
 tags: [status, badge]
+import_hint_type: inline
 component_data:
   author: ''
   createdAt: ''
