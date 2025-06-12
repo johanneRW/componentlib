@@ -8,7 +8,11 @@
 __all__ = ["BootstrapTableListComponentProps"]
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 class BootstrapTableListComponentProps(BaseModel):
-    content: Optional[str] = Field('Example content')
+    can_edit_multiple: Optional[bool] = Field(True)
+    columns: Optional[List[Any]] = Field(...)
+    items: Optional[List[Any]] = Field(...)
+    search_data: Optional[Dict[str, Any]] = Field(...)
+    total: Optional[float] = Field(1000)

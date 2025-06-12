@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "componentlib"
-version = "0.12.1"
+version = "0.13.0"
 description = "A Django, HTML and HTMX component library"
 readme = "README.md"
 requires-python = ">=3.6"
@@ -17,7 +17,7 @@ dependencies = [
   "pyyaml",
   "rapidfuzz>=3.13.0",
   "watchdog>=6.0.0",
-  "pydantic>=2.11.4",
+  "pydantic>=1.6,<2.0.0",
 ]
 
 classifiers = [

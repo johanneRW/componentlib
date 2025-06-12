@@ -11,4 +11,4 @@ from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional
 
 class StatusBadgeComponentProps(BaseModel):
-    form: Optional[Any] = None
+    form: Optional[Dict[str, Any]] = Field(...)
