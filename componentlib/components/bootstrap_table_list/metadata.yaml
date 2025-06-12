@@ -1,0 +1,10 @@
+name: bootstrap_table_list
+display_name: Bootstrap Table List
+class_name: BootstrapTableListComponent
+description: Write a description of the component here.
+tags: []
+import_hint_type: default
+component_data:
+  author: johanne
+  createdAt: 2025-06-12
+  component_uuid: e4ae8481-5095-4035-93f1-5d34d430c387

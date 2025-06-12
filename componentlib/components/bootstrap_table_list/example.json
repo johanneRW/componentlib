@@ -1,0 +1,32 @@
+{
+  "search_data": {
+    "page_number": 1,
+    "limit": 100
+  },
+  "total": 1000,
+  "can_edit_multiple": true,
+  "columns": [
+    {
+      "name": "size",
+      "verbose_name": "Størrelse",
+      "show": true
+    },
+    {
+      "name": "price",
+      "verbose_name": "Pris",
+      "show": true
+    }
+  ],
+  "items": [
+    {
+      "id": 1,
+      "size": "XL",
+      "price": 123.45
+    },
+    {
+      "id": 1,
+      "size": "S",
+      "price": 12.345
+    }
+  ]
+}
