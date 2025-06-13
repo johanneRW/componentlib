@@ -8,7 +8,26 @@ This project contains a number of UI components for Django/HTML/HTMX, as well as
 
 > pip install "componentlib@git+https://github.com/johanneRW/componentlib.git"
 
-2. Add `componentlib` to your `INSTALLED_APPS` (in `settings.py`)
+2. Update settings:
+
+- Add `componentlib` to your `INSTALLED_APPS` (in `settings.py`)
+- Unless you have `APP_DIRS = True` in `TEMPLATES`, you also need to add:
+
+```
+import componentlib
+componentlib_path = Path(componentlib.__file__).parent
+
+TEMPLATES = [
+    {
+        ...,
+        "DIRS": [
+            ...,
+            componentlib_path,
+        ],
+        ...
+    }
+]
+```
 
 3. Add `componentlib` URLs to your project `urls.py`:
 
