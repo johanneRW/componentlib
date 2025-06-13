@@ -4,6 +4,13 @@
 │   ├── apps.py
 │   ├── components
 │   │   ├── base.py
+│   │   ├── bootstrap_table_list
+│   │   │   ├── example.json
+│   │   │   ├── __init__.py
+│   │   │   ├── metadata.yaml
+│   │   │   ├── props.py
+│   │   │   ├── README.md
+│   │   │   └── template.html
 │   │   ├── dropdown
 │   │   │   ├── example.json
 │   │   │   ├── __init__.py
@@ -135,7 +142,6 @@
 ├── pyproject.toml
 ├── README.md
 ├── requirements.txt
-├── scripts
 └── struktur.txt
 
-27 directories, 111 files
+27 directories, 117 files
